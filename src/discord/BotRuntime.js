@@ -26,6 +26,7 @@ import {
 import { adjustUserBalance, BalanceAdjustmentError } from "../services/AdminBalanceService.js";
 import { getPurchasesAwaitingReview, getReviewablePurchase, submitPurchaseReview } from "../services/PurchaseReviewService.js";
 import { startMainBotPresence } from "../services/MainBotPresence.js";
+import { probeDiscordGatewayRest } from "./DiscordGatewayProbe.js";
 
 let mainClient;
 let refreshTimer;
@@ -409,6 +410,7 @@ async function startMainClient(token) {
   });
   configureClient(client);
   console.log("Connecting main bot to Discord...");
+  await probeDiscordGatewayRest(token, "Main bot");
   let loginTimeout;
   try {
     await Promise.race([
