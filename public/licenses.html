@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>라이선스 관리 | 복구봇 관리</title>
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png"><link rel="stylesheet" href="/assets/style.css?v=license-auto-hosts-2"><script src="/assets/app.js" defer></script><script src="/assets/licenses.js?v=license-auto-hosts-2" defer></script>
+</head>
+<body data-page="licenses">
+  <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
+  <div class="layout">
+    <nav class="sidebar"><a href="/">메인페이지</a><a href="/hosts">호기 설정</a><a href="/recovery">복구 실행</a><a href="/products">제품 가격</a><a class="active" href="/licenses">라이선스</a><a href="/auto-recharge">자동충전 설정</a><a href="/data">DB 데이터 관리</a></nav>
+    <main class="content">
+      <p class="eyebrow">LICENSES</p><h1>라이선스 관리</h1>
+      <section class="panel">
+        <h2>라이선스 발급 / 상품 만들기</h2>
+        <form id="license-create-form" class="form-grid">
+          <label>라이선스 이름 / 상품명<input name="name" maxlength="120" required></label>
+          <label class="check-label license-toggle"><input name="productize" type="checkbox"> 즉시 제품화하여 구매 목록에 공개</label>
+          <fieldset class="wide host-picker"><legend>포함 호기</legend><div id="license-hosts" class="host-choice-grid"></div><p id="license-host-total" class="license-host-total" aria-live="polite">선택 호기 예상 ACTIVE 합계: 0명</p></fieldset>
+          <div id="product-license-fields" class="wide form-grid license-product-fields" hidden>
+            <p class="wide muted product-assignment-help">구매 시 등록된 모든 호기 중 온라인 호기를 후보로 삼아, ACTIVE 인원 범위에 맞는 최소 호기 조합을 자동 배정합니다. 조건에 맞는 조합이 없으면 구매할 수 없습니다. 복구 시에는 배정된 호기의 ACTIVE 멤버 전체를 복구합니다.</p>
+            <label>가격 (원)<input name="priceMinor" type="number" min="1" step="1" value="100" required></label>
+            <label>배정 인원 최소 (ACTIVE)<input name="minimumActiveMembers" type="number" min="0" step="1" value="1" required></label>
+            <label>배정 인원 최대 (ACTIVE)<input name="maximumActiveMembers" type="number" min="0" step="1" value="100" required></label>
+          </div>
+          <label>유효 기간 (일)<input name="validityDays" type="number" min="1" step="1" placeholder="예: 30"></label>
+          <label class="check-label license-toggle"><input name="permanent" type="checkbox"> 영구 라이선스</label>
+          <div class="wide"><button type="submit">만들기</button></div>
+        </form>
+        <p id="license-create-message" class="message" role="status"></p>
+        <div id="issued-license-result" class="license-issued-result" hidden></div>
+      </section>
+      <section class="panel">
+        <div class="license-list-heading"><div><h2>발급된 라이선스</h2><p id="license-total" class="muted"></p></div><label>검색<input id="license-search" type="search" placeholder="코드, 상품명, 유저 ID"></label></div>
+        <div id="license-status-tabs" class="license-status-tabs">
+          <button type="button" data-status="ALL" class="active">전체</button>
+          <button type="button" data-status="ISSUED">발급완료</button>
+          <button type="button" data-status="IN_PROGRESS">진행중</button>
+          <button type="button" data-status="REJECTED">거절됨</button>
+          <button type="button" data-status="COMPLETED">완료됨</button>
+          <button type="button" data-status="FAILED">실패</button>
+          <button type="button" data-status="EXPIRED">만료됨</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>라이선스 내용</th><th>발급 날짜</th><th>복구 호기</th><th>예상 인원</th><th>만료일</th><th>상태</th><th>거절 횟수</th><th>작업</th></tr></thead><tbody id="license-rows"></tbody></table></div>
+        <div class="license-pagination"><button type="button" id="license-prev" class="button-quiet">이전</button><span id="license-page"></span><button type="button" id="license-next" class="button-quiet">다음</button></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

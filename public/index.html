@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png">
+  <title>메인 | 복구봇 관리</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+  <script src="/assets/dashboard.js" defer></script>
+</head>
+<body data-page="dashboard">
+  <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
+  <div class="layout">
+    <nav class="sidebar">
+      <a class="active" href="/">메인페이지</a><a href="/hosts">호기 설정</a><a href="/recovery">복구 실행</a><a href="/products">제품 가격</a>
+      <a href="/licenses">라이선스</a><a href="/auto-recharge">자동충전 설정</a><a href="/data">DB 데이터 관리</a>
+    </nav>
+    <main class="content">
+      <div class="dashboard-heading-row">
+        <div class="dashboard-intro"><p class="eyebrow">OVERVIEW</p><h1>메인페이지</h1><p class="muted">복구봇 호기와 제품 설정을 관리합니다.</p></div>
+        <section class="dashboard-status-card" aria-label="시스템 상태">
+          <div class="dashboard-status-row"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8.5" ry="3"></ellipse><path d="M3.5 5v14c0 1.7 3.8 3 8.5 3s8.5-1.3 8.5-3V5"></path><path d="M3.5 12c0 1.7 3.8 3 8.5 3s8.5-1.3 8.5-3"></path></svg><span>MongoDB</span><strong id="database-status" class="system-state" data-state="unknown">확인 중</strong></div>
+          <div class="dashboard-status-row"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12h4l3-7 5 14 3-7h4"></path></svg><span>서비스</span><strong id="service-status" class="system-state" data-state="unknown">확인 중</strong></div>
+        </section>
+      </div>
+      <section class="card-grid">
+        <a class="card link-card" href="/hosts"><h2>호기 설정</h2><p>봇 호기를 추가하고 이름이나 토큰을 관리합니다.</p></a>
+        <a class="card link-card" href="/recovery"><h2>복구 실행</h2><p>호기와 대상 서버를 선택해 저장 멤버를 복구합니다.</p></a>
+        <a class="card link-card" href="/products"><h2>제품 가격</h2><p>제품 가격과 판매 상태를 설정합니다.</p></a>
+        <a class="card link-card" href="/licenses"><h2>라이선스</h2><p>라이선스 직접 발급과 판매 상품, 사용 상태를 관리합니다.</p></a>
+        <a class="card link-card" href="/auto-recharge"><h2>자동충전</h2><p>계좌, 입금 알림, 충전 임베드를 설정합니다.</p></a>
+        <a class="card link-card" href="/data"><h2>DB 데이터 관리</h2><p>호기를 선택해 저장된 유저 데이터를 확인합니다.</p></a>
+      </section>
+      <section class="panel dashboard-finance-panel">
+        <div class="dashboard-finance-heading">
+          <div><h2>월별 실적</h2><p id="finance-chart-status" class="muted">실적 데이터를 준비하는 중...</p></div>
+          <label class="dashboard-year-select">연도<select id="finance-year" aria-label="실적 연도"></select></label>
+        </div>
+        <div class="dashboard-finance-totals">
+          <div><span class="finance-legend recharge-legend"></span><span>충전량</span><strong id="recharge-year-total">0원</strong></div>
+          <div><span class="finance-legend purchase-legend"></span><span>구매량</span><strong id="purchase-year-total">0원</strong></div>
+        </div>
+        <div class="dashboard-chart-wrap"><canvas id="finance-chart" role="img" aria-label="1월부터 12월까지의 월별 충전량 및 구매량 꺾은선 그래프"></canvas></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+
+

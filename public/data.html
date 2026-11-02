@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png">
+  <title>DB 데이터 관리 | 복구봇 관리</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+  <script src="/assets/data.js" defer></script>
+</head>
+<body data-page="data">
+  <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
+  <div class="layout">
+    <nav class="sidebar"><a href="/">메인페이지</a><a href="/hosts">호기 설정</a><a href="/recovery">복구 실행</a><a href="/products">제품 가격</a><a href="/licenses">라이선스</a><a href="/auto-recharge">자동충전 설정</a><a class="active" href="/data">DB 데이터 관리</a></nav>
+    <main class="content">
+      <p class="eyebrow">HOST DATA</p><h1>DB 데이터 관리</h1>
+      <section class="panel">
+        <h2>평문 JSON 추출</h2>
+        <div class="data-export-row"><label>호기 선택<select id="export-host" required></select></label><button id="export-users" type="button">평문 JSON 추출</button></div>
+      </section>
+      <p id="data-message" class="message" role="status"></p>
+      <section class="panel">
+        <h2>평문 JSON 가져오기</h2>
+        <form id="plaintext-import-form" class="form-grid">
+          <label class="wide">대상 호기<select name="hostId" id="plaintext-host" required></select></label>
+          <label class="wide">평문 JSON 파일<input name="backupFile" type="file" accept="application/json,.json" required></label>
+          <button type="submit">평문 JSON 가져오기</button>
+        </form>
+      </section>
+      <section class="panel">
+        <h2>개별 유저 추가</h2>
+        <form id="user-form" class="form-grid">
+          <label>호기<select name="hostId" id="user-host" required></select></label>
+          <label>Discord 유저 ID<input name="discordUserId" inputmode="numeric" required></label>
+          <label>이름<input name="username" maxlength="120" required></label>
+          <label>이메일(선택)<input name="email" type="email" maxlength="320"></label>
+          <label class="wide">OAuth access token<input name="accessToken" type="password" autocomplete="new-password" required></label>
+          <label class="wide">OAuth refresh token<input name="refreshToken" type="password" autocomplete="new-password" required></label>
+          <button type="submit">유저 추가</button>
+        </form>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
+

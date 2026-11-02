@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png">
+  <title>복구 실행 | 복구봇 관리</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+  <script src="/assets/recovery.js" defer></script>
+</head>
+<body data-page="recovery">
+  <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
+  <div class="layout">
+    <nav class="sidebar"><a href="/">메인페이지</a><a href="/hosts">호기 설정</a><a class="active" href="/recovery">복구 실행</a><a href="/products">제품 가격</a><a href="/licenses">라이선스</a><a href="/auto-recharge">자동충전 설정</a><a href="/data">DB 데이터 관리</a></nav>
+    <main class="content">
+      <p class="eyebrow">MEMBER RECOVERY</p><h1>복구 실행</h1>
+      <section class="panel">
+        <h2>호기 선택</h2>
+        <div id="recovery-hosts" class="host-checkboxes"><p class="muted">호기를 불러오는 중...</p></div>
+        <div id="recovery-invite-links" class="invite-links"></div>
+        <label class="recovery-guild">대상 서버 ID<input id="recovery-guild-id" inputmode="numeric" autocomplete="off" placeholder="Discord 서버 ID" required></label>
+        <div class="button-row"><button id="recovery-start">복구 시작</button><span id="recovery-selected-count" class="muted"></span></div>
+      </section>
+      <div id="recovery-toast" class="toast" role="status" aria-live="polite"></div>
+      <section class="panel">
+        <div class="section-heading"><h2>복구 진행 및 최근 기록</h2><button id="recovery-refresh" class="button-quiet" type="button">새로고침</button></div>
+        <div class="table-wrap"><table><thead><tr><th>시작 시각</th><th>서버 ID</th><th>상태</th><th>현재 호기</th><th>진행률</th><th>복구 완료</th><th>이미 참여</th><th>실패</th><th>실패 사유</th><th>남은 시간</th></tr></thead><tbody id="recovery-runs"></tbody></table></div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+

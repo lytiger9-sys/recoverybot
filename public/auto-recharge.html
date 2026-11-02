@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>자동충전 설정 | 복구봇 관리</title>
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png"><link rel="stylesheet" href="/assets/style.css"><script src="/assets/app.js" defer></script><script src="/assets/auto-recharge.js?v=toast-messages-2" defer></script>
+</head>
+<body data-page="auto-recharge">
+  <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
+  <div class="layout">
+    <nav class="sidebar"><a href="/">메인페이지</a><a href="/hosts">호기 설정</a><a href="/recovery">복구 실행</a><a href="/products">제품 가격</a><a href="/licenses">라이선스</a><a class="active" href="/auto-recharge">자동충전 설정</a><a href="/data">DB 데이터 관리</a></nav>
+    <main class="content">
+      <p class="eyebrow">AUTO RECHARGE</p><h1>자동충전 설정</h1>
+      <form id="auto-recharge-form">
+        <div class="settings-columns">
+          <section class="panel account-settings-panel"><h2>계좌 정보 / 최소 충전금액</h2><div class="stack compact-stack account-settings-fields">
+              <label>은행 이름<input name="accountBank" maxlength="80" placeholder="예: 국민은행"></label>
+              <label>계좌번호<input name="accountNumber" maxlength="80" autocomplete="off"></label>
+              <label>예금주<input name="accountHolder" maxlength="80"></label>
+              <label>최소 충전 금액 (원)<input name="minimumTopupMinor" type="number" min="1" step="1" required></label>
+          </div></section>
+          <section class="panel"><div class="settings-panel-heading"><h2>Pushbullet 입금 알림</h2><label class="check-label"><input type="checkbox" name="enabled"> 자동충전 사용</label></div><div class="stack compact-stack">
+            <label>Pushbullet 토큰<input name="token" type="password" autocomplete="new-password" placeholder="새 토큰 입력 시 교체"></label>
+            <label>은행 알림 앱 이름<input name="notificationAppName" maxlength="100" placeholder="Pushbullet 알림의 앱 이름과 동일하게"></label>
+          </div></section>
+        </div>
+        <section class="panel"><div class="settings-panel-heading"><h2>Discord 로그 채널 ID</h2><button type="button" id="save-log-channels">로그 채널 저장</button></div><div class="settings-columns compact-stack">
+          <label>리뷰 로그 채널<input name="reviewLogChannelId" inputmode="numeric" maxlength="22" placeholder="선택 입력"></label>
+          <label>구매 로그 채널<input name="purchaseLogChannelId" inputmode="numeric" maxlength="22" placeholder="선택 입력"></label>
+          <label>충전 로그 채널<input name="chargeLogChannelId" inputmode="numeric" maxlength="22" placeholder="선택 입력"></label>
+          <label>입금 로그 채널<input name="depositLogChannelId" inputmode="numeric" maxlength="22" placeholder="선택 입력"></label>
+        </div></section>
+        <section class="panel"><h2>충전 패널 (Components V2) 편집 / Discord 미리보기</h2><div class="settings-columns embed-layout">
+          <div class="stack compact-stack">
+            <label>제목<input name="embedTitle" maxlength="256" required></label>
+            <label>설명<textarea name="embedDescription" rows="7" maxlength="4000"></textarea></label>
+            <div class="settings-columns color-row"><label>색상 (Hex)<input name="embedColor" type="color" value="#c8a45b"></label><label>푸터 텍스트<input name="embedFooter" maxlength="2048"></label></div>
+            <label>이미지 URL (선택)<input name="embedImageUrl" type="url" maxlength="2048" placeholder="https://..."></label>
+            <button type="submit">설정 저장</button>
+          </div>
+          <div><h3 class="preview-heading">Discord 미리보기</h3><div class="discord-preview">
+            <img class="discord-bot-avatar" src="/assets/veloxcore-logo.png" alt="VeloxCore Labs 봇 프로필">
+            <div class="discord-message">
+              <div class="discord-message-author"><strong>복구봇</strong><span class="discord-bot-tag">앱</span><time>지금</time></div>
+              <article id="embed-preview" class="discord-v2-card">
+                <strong id="preview-title" class="discord-preview-title"></strong>
+                <div class="discord-v2-separator"></div>
+                <div class="discord-v2-content"><p id="preview-description"></p><p id="preview-minimum" class="preview-minimum"></p></div>
+                <img id="preview-image" alt="임베드 이미지 미리보기">
+                <div class="discord-v2-separator buttons-separator"></div>
+                <div class="discord-component-buttons">
+                  <button type="button" class="preview-button primary">입금</button>
+                  <button type="button" class="preview-button secondary">내정보</button>
+                  <button type="button" class="preview-button success">상품</button>
+                  <button type="button" class="preview-button secondary">후기</button>
+                </div>
+                <div id="preview-footer-separator" class="discord-v2-separator footer-separator" hidden></div>
+                <small id="preview-footer" class="discord-preview-footer" hidden></small>
+              </article>
+            </div>
+          </div></div>
+        </div></section>
+      </form>
+    </main>
+  </div>
+</body>
+</html>
+
+

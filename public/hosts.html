@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png">
+  <title>호기 설정 | 복구봇 관리</title>
+  <link rel="stylesheet" href="/assets/style.css?v=hosts-refresh-2">
+  <script src="/assets/app.js" defer></script>
+  <script src="/assets/hosts.js?v=hosts-refresh-1" defer></script>
+</head>
+<body data-page="hosts">
+  <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
+  <div class="layout">
+    <nav class="sidebar"><a href="/">메인페이지</a><a class="active" href="/hosts">호기 설정</a><a href="/recovery">복구 실행</a><a href="/products">제품 가격</a><a href="/licenses">라이선스</a><a href="/auto-recharge">자동충전 설정</a><a href="/data">DB 데이터 관리</a></nav>
+    <main class="content">
+      <p class="eyebrow">BOT HOSTS</p><h1>호기 설정</h1>
+      <section class="panel">
+        <h2>기본 호기 이름</h2>
+        <form id="host-settings-form" class="form-grid">
+          <label>이름 패턴<input name="defaultNameTemplate" maxlength="80" value="호기 {n}" required></label>
+          <button type="submit">기본값 저장</button>
+        </form>
+      </section>
+      <section class="panel">
+        <h2>호기 추가</h2>
+        <form id="host-form" class="form-grid">
+          <label>자동 설정될 호기 이름<input id="host-name-preview" type="text" value="호기 1" readonly></label>
+          <label>Discord OAuth Client ID<input name="clientId" inputmode="numeric" autocomplete="off" required></label>
+          <label>Discord OAuth Client Secret<input name="clientSecret" type="password" autocomplete="new-password" required></label>
+          <label class="wide">봇 토큰<input name="botToken" type="password" autocomplete="new-password" required></label>
+          <label class="wide">봇 초대 링크 (선택)<input name="inviteLink" type="url" placeholder="https://discord.com/oauth2/authorize?..." autocomplete="url"></label>
+          <button type="submit">호기 추가</button>
+        </form>
+      </section>
+      <section class="panel host-list-panel">
+        <div class="host-list-toolbar"><div><h2>호기 목록</h2><span id="host-count" class="count-label">0개</span></div><div class="host-list-controls"><select id="host-filter" aria-label="상태 필터"><option value="all">전체 상태</option><option value="on">온라인</option><option value="off">오프라인</option><option value="recovering">복구 중</option></select><input id="host-search" type="search" placeholder="호기 이름 또는 ID 검색" aria-label="호기 검색"></div></div>
+        <div class="host-list-table">
+          <div class="host-list-columns"><span>상태</span><span>호기</span><span>인원</span><span>마지막 실행</span><span>관리</span><span aria-hidden="true"></span></div>
+          <div id="hosts-list" class="host-accordion-list"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="hosts-toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+
+
+

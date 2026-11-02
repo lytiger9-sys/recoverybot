@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png">
+  <title>관리자 로그인 | 복구봇</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body class="login-page" data-page="login">
+  <main class="login-card">
+    <p class="eyebrow">RECOVERY BOT CONTROL</p>
+    <h1>관리자 로그인</h1>
+    <p class="muted">관리자 아이디와 비밀번호를 입력해 주세요.</p>
+    <form id="login-form" class="stack">
+      <label>아이디<input name="username" autocomplete="username" required></label>
+      <label>비밀번호<input name="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">로그인</button>
+    </form>
+    <p id="login-message" class="message" role="status"></p>
+  </main>
+</body>
+</html>

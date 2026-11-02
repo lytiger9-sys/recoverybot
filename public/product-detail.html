@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png">
+  <link rel="stylesheet" href="/assets/style.css?v=product-detail-1">
+  <title>상품 정보 | 복구봇 관리</title>
+  <script src="/assets/app.js?v=products-delete-3" defer></script>
+  <script src="/assets/product-detail.js?v=product-detail-1" defer></script>
+</head>
+<body data-page="product-detail">
+  <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
+  <div class="layout">
+    <nav class="sidebar"><a href="/">메인페이지</a><a href="/hosts">호기 설정</a><a href="/recovery">복구 실행</a><a class="active" href="/products">제품 가격</a><a href="/licenses">라이선스</a><a href="/auto-recharge">자동충전 설정</a><a href="/data">DB 데이터 관리</a></nav>
+    <main class="content product-detail-content">
+      <div class="product-detail-heading"><div><p class="eyebrow">PRODUCT INFO</p><h1 id="product-name">상품 정보를 불러오는 중...</h1></div><a class="button-link" href="/products">상품 목록으로</a></div>
+      <p id="product-detail-message" class="message" role="status"></p>
+      <section class="panel">
+        <div class="product-detail-stats">
+          <article><span>가격</span><strong id="product-price">-</strong></article>
+          <article><span>라이선스 기한</span><strong id="product-duration">-</strong></article>
+          <article><span>예상 복구 인원 범위</span><strong id="product-member-range">-</strong></article>
+          <article><span>사용 호기</span><strong id="product-host-count">-</strong></article>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="product-detail-section-heading"><div><h2>호기별 유저 현황</h2><p class="muted">현재 DB에 저장된 전체 유저와 ACTIVE 상태 유저 수입니다.</p></div><span id="product-status" class="product-status"></span></div>
+        <div class="product-detail-totals"><div><span>전체 유저</span><strong id="product-total-members">0명</strong></div><div><span>예상 복구 인원 (ACTIVE)</span><strong id="product-active-members">0명</strong></div></div>
+        <div class="table-wrap"><table><thead><tr><th>호기</th><th>전체 유저</th><th>예상 복구 인원 (ACTIVE)</th></tr></thead><tbody id="product-host-rows"></tbody></table></div>
+        <p id="product-created-at" class="muted product-created-at"></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
