@@ -392,11 +392,15 @@ function configureClient(client) {
 
 async function startMainClient(token) {
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+  client.on("error", (error) => console.error("Main bot client error:", error?.message ?? error?.name ?? "UnknownError"));
+  client.on("shardError", (error, shardId) => console.error("Main bot gateway error:", { shardId, message: error?.message ?? error?.name ?? "UnknownError" }));
+  client.on("shardDisconnect", (event, shardId) => console.error("Main bot gateway disconnected:", { shardId, code: event?.code, reason: event?.reason?.toString?.() ?? "" }));
   client.once("ready", async () => {
+    console.log("Main bot online:", client.user?.tag ?? client.user?.username ?? "unknown");
     stopMainBotPresence?.();
     stopMainBotPresence = startMainBotPresence(client);
     try { await client.application.commands.set([rechargePanelCommand, manualRechargeCommand, recoverCommand].map((command) => command.toJSON())); }
-    catch (error) { console.error("Discord command sync failed:", error?.name ?? "UnknownError"); }
+    catch (error) { console.error("Discord command sync failed:", error?.message ?? error?.name ?? "UnknownError"); }
   });
   configureClient(client);
   await client.login(token);
@@ -407,7 +411,9 @@ export async function startBotRuntime() {
   if (!config.recoveryLogChannelId) console.warn("Recovery result logging is disabled; set RECOVERY_LOG_CHANNEL_ID in .env.");
   if (config.mainBotToken && !mainClient) {
     try { mainClient = await startMainClient(config.mainBotToken); }
-    catch (error) { console.error("Main bot login failed:", error?.name ?? "UnknownError"); }
+    catch (error) { console.error("Main bot login failed:", error?.message ?? error?.name ?? "UnknownError"); }
+  } else if (!config.mainBotToken) {
+    console.error("Main bot was not started: MAIN_BOT_TOKEN is empty in the runner environment.");
   }
   setRecoveryLogClient(mainClient);
   await refreshHostBots();
