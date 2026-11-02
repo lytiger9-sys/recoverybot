@@ -393,6 +393,11 @@ function configureClient(client) {
 async function startMainClient(token) {
   const client = new Client({ intents: [GatewayIntentBits.Guilds] });
   client.on("error", (error) => console.error("Main bot client error:", error?.message ?? error?.name ?? "UnknownError"));
+  client.on("debug", (message) => {
+    if (/Preparing to connect to the gateway|Fetched Gateway Information|Connecting to wss:|Waiting for identify|Sending IDENTIFY|network error/i.test(message)) {
+      console.log("Main bot gateway stage:", message);
+    }
+  });
   client.on("shardError", (error, shardId) => console.error("Main bot gateway error:", { shardId, message: error?.message ?? error?.name ?? "UnknownError" }));
   client.on("shardDisconnect", (event, shardId) => console.error("Main bot gateway disconnected:", { shardId, code: event?.code, reason: event?.reason?.toString?.() ?? "" }));
   client.once("ready", async () => {
