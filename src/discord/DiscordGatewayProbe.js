@@ -1,14 +1,13 @@
 export async function probeDiscordGatewayRest(token, label) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
+  let response;
   try {
     const normalizedToken = token.replace(/^(Bot|Bearer)\s*/i, "");
-    const response = await fetch("https://discord.com/api/v10/gateway/bot", {
+    response = await fetch("https://discord.com/api/v10/gateway/bot", {
       headers: { Authorization: "Bot " + normalizedToken },
       signal: controller.signal,
     });
-    console.log(label + " Discord REST probe status:", response.status);
-    await response.body?.cancel().catch(() => {});
   } catch (error) {
     console.error(label + " Discord REST probe failed:", {
       name: error?.name ?? "UnknownError",
@@ -16,7 +15,19 @@ export async function probeDiscordGatewayRest(token, label) {
       causeCode: error?.cause?.code ?? "",
       causeMessage: error?.cause?.message ?? "",
     });
+    throw new Error(label + " Discord REST probe failed before login.", { cause: error });
   } finally {
     clearTimeout(timeout);
+  }
+
+  const retryAfter = response.headers.get("retry-after") ?? response.headers.get("x-ratelimit-reset-after") ?? "";
+  const rateLimitScope = response.headers.get("x-ratelimit-scope") ?? "";
+  console.log(label + " Discord REST probe status:", response.status, {
+    rateLimitScope,
+    retryAfterSeconds: retryAfter,
+  });
+  await response.body?.cancel().catch(() => {});
+  if (response.status !== 200) {
+    throw new Error(label + " Discord REST probe returned HTTP " + response.status + (retryAfter ? "; retry after " + retryAfter + "s" : ""));
   }
 }
