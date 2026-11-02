@@ -403,7 +403,20 @@ async function startMainClient(token) {
     catch (error) { console.error("Discord command sync failed:", error?.message ?? error?.name ?? "UnknownError"); }
   });
   configureClient(client);
-  await client.login(token);
+  console.log("Connecting main bot to Discord...");
+  let loginTimeout;
+  try {
+    await Promise.race([
+      client.login(token),
+      new Promise((_, reject) => { loginTimeout = setTimeout(() => reject(new Error("Discord Gateway login timed out after 30 seconds.")), 30_000); }),
+    ]);
+    console.log("Main bot gateway connected; waiting for READY.");
+  } catch (error) {
+    client.destroy();
+    throw error;
+  } finally {
+    clearTimeout(loginTimeout);
+  }
   return client;
 }
 
