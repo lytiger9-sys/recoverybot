@@ -20,14 +20,19 @@ export async function probeDiscordGatewayRest(token, label) {
     clearTimeout(timeout);
   }
 
-  const retryAfter = response.headers.get("retry-after") ?? response.headers.get("x-ratelimit-reset-after") ?? "";
+  const body = await response.json().catch(() => ({}));
+  const retryAfter = response.headers.get("retry-after") || response.headers.get("x-ratelimit-reset-after") || body.retry_after || "";
   const rateLimitScope = response.headers.get("x-ratelimit-scope") ?? "";
   console.log(label + " Discord REST probe status:", response.status, {
     rateLimitScope,
     retryAfterSeconds: retryAfter,
+    global: typeof body.global === "boolean" ? body.global : null,
   });
-  await response.body?.cancel().catch(() => {});
   if (response.status !== 200) {
-    throw new Error(label + " Discord REST probe returned HTTP " + response.status + (retryAfter ? "; retry after " + retryAfter + "s" : ""));
+    const error = new Error(label + " Discord REST probe returned HTTP " + response.status + (retryAfter ? "; retry after " + retryAfter + "s" : ""));
+    error.status = response.status;
+    error.retryAfterMs = Number.isFinite(Number(retryAfter)) ? Math.max(0, Number(retryAfter) * 1000) : 60_000;
+    error.rateLimitScope = rateLimitScope || (body.global ? "global" : "");
+    throw error;
   }
 }

@@ -31,6 +31,8 @@ import { probeDiscordGatewayRest } from "./DiscordGatewayProbe.js";
 let mainClient;
 let refreshTimer;
 let stopMainBotPresence;
+let mainBotLoginInProgress = false;
+let nextMainBotAttemptAt = 0;
 const adminPermission = PermissionFlagsBits.Administrator.toString();
 const rechargePanelCommand = new SlashCommandBuilder()
   .setName("recharge-panel").setDescription("자동충전 패널을 지정 채널에 게시합니다.")
@@ -427,17 +429,34 @@ async function startMainClient(token) {
   return client;
 }
 
+async function ensureMainBotConnected() {
+  if (!config.mainBotToken) {
+    console.error("Main bot was not started: MAIN_BOT_TOKEN is empty in the runner environment.");
+    return;
+  }
+  if (mainClient || mainBotLoginInProgress || Date.now() < nextMainBotAttemptAt) return;
+  mainBotLoginInProgress = true;
+  try {
+    mainClient = await startMainClient(config.mainBotToken);
+  } catch (error) {
+    const retryMs = error?.status === 429 ? (error.retryAfterMs ?? 60_000) + 5_000 : 30_000;
+    nextMainBotAttemptAt = Date.now() + retryMs;
+    console.error("Main bot retry deferred:", Math.ceil(retryMs / 1000), "seconds");
+    console.error("Main bot login failed:", error?.message ?? error?.name ?? "UnknownError");
+  } finally {
+    mainBotLoginInProgress = false;
+  }
+}
+
 export async function startBotRuntime() {
   if (!config.recoveryLogChannelId) console.warn("Recovery result logging is disabled; set RECOVERY_LOG_CHANNEL_ID in .env.");
-  if (config.mainBotToken && !mainClient) {
-    try { mainClient = await startMainClient(config.mainBotToken); }
-    catch (error) { console.error("Main bot login failed:", error?.message ?? error?.name ?? "UnknownError"); }
-  } else if (!config.mainBotToken) {
-    console.error("Main bot was not started: MAIN_BOT_TOKEN is empty in the runner environment.");
-  }
+  await ensureMainBotConnected();
   setRecoveryLogClient(mainClient);
   await refreshHostBots();
-  refreshTimer = setInterval(() => { void refreshHostBots().catch((error) => console.error("Host bot refresh failed:", error?.name ?? "UnknownError")); }, 15_000);
+  refreshTimer = setInterval(() => {
+    void ensureMainBotConnected().then(() => setRecoveryLogClient(mainClient));
+    void refreshHostBots().catch((error) => console.error("Host bot refresh failed:", error?.name ?? "UnknownError"));
+  }, 15_000);
   refreshTimer.unref?.();
 }
 
