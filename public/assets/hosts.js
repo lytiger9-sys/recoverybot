@@ -13,6 +13,7 @@ function showMessage(text, isError = false) {
   const toast = document.getElementById("hosts-toast");
   if (!toast) return;
   toast.textContent = text;
+  toast.title = text;
   toast.classList.toggle("error", isError);
   toast.classList.add("visible");
   clearTimeout(hostsToastTimer);

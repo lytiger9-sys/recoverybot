@@ -6,14 +6,24 @@ import {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
   ModalBuilder,
+  SectionBuilder,
   TextInputBuilder,
   TextInputStyle,
   TextDisplayBuilder,
+  ThumbnailBuilder,
 } from "discord.js";
 
-export function buildLicenseInfoCard(title, lines, color = 0xc8a45b) {
-  return new ContainerBuilder().setAccentColor(color)
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${title}\n${lines.join("\n")}`));
+export function buildLicenseInfoCard(title, lines, color = 0xc8a45b, thumbnailUrl = null) {
+  const content = new TextDisplayBuilder().setContent(`# ${title}\n${lines.join("\n")}`);
+  const container = new ContainerBuilder().setAccentColor(color);
+  if (thumbnailUrl) {
+    container.addSectionComponents(new SectionBuilder()
+      .addTextDisplayComponents(content)
+      .setThumbnailAccessory(new ThumbnailBuilder({ media: { url: thumbnailUrl } }).setDescription(title)));
+  } else {
+    container.addTextDisplayComponents(content);
+  }
+  return container;
 }
 
 export function buildLicenseDeliveryCard(license, hosts, expectedMemberCount) {
@@ -86,7 +96,7 @@ export function buildPurchaseReviewModal(licenseId, productName) {
 export function buildPurchaseReviewLog(review, reviewer) {
   const purchasedAt = new Date(review.purchasedAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" });
   return new ContainerBuilder().setAccentColor(0xc8a45b)
-    .addTextDisplayComponents(new TextDisplayBuilder().setContent([
+    .addSectionComponents(new SectionBuilder().addTextDisplayComponents(new TextDisplayBuilder().setContent([
       "# 새 후기",
       "유저: <@" + reviewer.id + "> (" + reviewer.username + ")",
       "제품: " + review.productName,
@@ -94,7 +104,7 @@ export function buildPurchaseReviewLog(review, reviewer) {
       "별점: **" + "⭐".repeat(review.rating) + "** (" + review.rating + "/5)",
       "",
       review.content,
-    ].join("\n")));
+    ].join("\n"))).setThumbnailAccessory(new ThumbnailBuilder({ media: { url: reviewer.displayAvatarURL({ size: 128 }) } }).setDescription(reviewer.username + " 프로필 사진")));
 }
 
 export function buildProductConfirm(product, hosts, expectedCount) {

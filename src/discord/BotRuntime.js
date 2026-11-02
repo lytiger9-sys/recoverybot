@@ -59,13 +59,13 @@ async function postLicenseApproval(request, license, hosts, state = "PENDING") {
   });
 }
 
-async function postLicensePurchaseLog(channelId, title, lines) {
+async function postLicensePurchaseLog(channelId, title, lines, thumbnailUrl) {
   if (!mainClient?.isReady() || !channelId) return;
   const channel = await mainClient.channels.fetch(channelId);
   if (!channel?.isTextBased()) return;
   await channel.send({
     flags: MessageFlags.IsComponentsV2,
-    components: [buildLicenseInfoCard(title, lines)],
+    components: [buildLicenseInfoCard(title, lines, 0xc8a45b, thumbnailUrl)],
     allowedMentions: { parse: [] },
   });
 }
@@ -282,10 +282,9 @@ function configureClient(client) {
           await postLicensePurchaseLog(rechargeSettings.purchaseLogChannelId, "라이선스 구매 기록", [
             "구매자: <@" + interaction.user.id + "> (`" + interaction.user.id + "`)",
             "상품: **" + purchase.product.name + "** · **" + Number(purchase.product.priceMinor).toLocaleString("ko-KR") + "원**",
-            "실제 코드: `" + purchase.license.code + "`",
             "배정 호기: **" + purchase.hosts.map((item) => item.name).join(", ") + "**",
             "예상 복구 인원: **" + purchase.expectedMemberCount.toLocaleString("ko-KR") + "명**",
-          ]).catch((error) => console.error("License audit log failed:", error?.name ?? "UnknownError"));
+          ], interaction.user.displayAvatarURL({ size: 128 })).catch((error) => console.error("License audit log failed:", error?.name ?? "UnknownError"));
           return interaction.editReply({ flags: MessageFlags.IsComponentsV2, components: [receipt] });
         } catch (error) {
           const lines = error?.code === "INSUFFICIENT_BALANCE" ? ["보유 캐시가 부족합니다."] : [error?.message ?? "구매를 완료하지 못했습니다."];

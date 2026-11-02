@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png">
   <title>복구 실행 | 복구봇 관리</title>
-  <link rel="stylesheet" href="/assets/style.css">
+  <link rel="stylesheet" href="/assets/style.css?v=recovery-host-invite-1">
   <script src="/assets/app.js" defer></script>
-  <script src="/assets/recovery.js" defer></script>
+  <script src="/assets/recovery.js?v=recovery-host-invite-1" defer></script>
 </head>
 <body data-page="recovery">
   <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
@@ -18,7 +18,6 @@
       <section class="panel">
         <h2>호기 선택</h2>
         <div id="recovery-hosts" class="host-checkboxes"><p class="muted">호기를 불러오는 중...</p></div>
-        <div id="recovery-invite-links" class="invite-links"></div>
         <label class="recovery-guild">대상 서버 ID<input id="recovery-guild-id" inputmode="numeric" autocomplete="off" placeholder="Discord 서버 ID" required></label>
         <div class="button-row"><button id="recovery-start">복구 시작</button><span id="recovery-selected-count" class="muted"></span></div>
       </section>

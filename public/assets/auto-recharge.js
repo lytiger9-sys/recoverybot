@@ -19,6 +19,7 @@ function setAutoRechargeMessage(text, isError = false) {
     document.body.append(toast);
   }
   toast.textContent = text;
+  toast.title = text;
   toast.classList.toggle("error", isError);
   toast.classList.add("visible");
   clearTimeout(setAutoRechargeMessage.timeout);

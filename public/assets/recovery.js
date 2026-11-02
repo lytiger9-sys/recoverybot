@@ -13,7 +13,6 @@ async function recoveryApi(path, options = {}) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   const hostContainer = document.getElementById("recovery-hosts");
-  const linkContainer = document.getElementById("recovery-invite-links");
   const toast = document.getElementById("recovery-toast");
   const startButton = document.getElementById("recovery-start");
   const runRows = document.getElementById("recovery-runs");
@@ -22,6 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function notify(text, isError = false) {
     toast.textContent = text;
+    toast.title = text;
     toast.classList.toggle("error", isError);
     toast.classList.add("visible");
     clearTimeout(toastTimer);
@@ -37,15 +37,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const selected = selectedHosts();
     document.getElementById("recovery-selected-count").textContent =
       selected.length ? selected.reduce((sum, host) => sum + host.activeMemberCount, 0) + "명 선택됨" : "호기를 선택해 주세요.";
-    linkContainer.replaceChildren();
-    for (const host of selected.filter((item) => item.inviteLink)) {
-      const link = document.createElement("a");
-      link.href = host.inviteLink;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
-      link.textContent = host.name + " 봇 초대 링크 열기";
-      linkContainer.append(link);
-    }
   }
 
   async function loadHosts() {
@@ -61,16 +52,26 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
     for (const host of hosts) {
-      const label = document.createElement("label");
-      label.className = "check-label recovery-host-option";
+      const option = document.createElement("div");
+      option.className = "recovery-host-option";
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.value = host._id;
+      checkbox.id = "recovery-host-" + host._id;
       checkbox.addEventListener("change", updateSelection);
-      const text = document.createElement("span");
-      text.textContent = host.name + " · ACTIVE " + host.activeMemberCount + "명";
-      label.append(checkbox, text);
-      hostContainer.append(label);
+      const inviteLink = document.createElement("a");
+      inviteLink.className = "recovery-host-name-link";
+      inviteLink.href = host.inviteLink;
+      inviteLink.target = "_blank";
+      inviteLink.rel = "noopener noreferrer";
+      inviteLink.title = "봇 초대하기";
+      inviteLink.textContent = host.name;
+      const count = document.createElement("label");
+      count.className = "recovery-host-count";
+      count.htmlFor = checkbox.id;
+      count.textContent = " · ACTIVE " + Number(host.activeMemberCount).toLocaleString("ko-KR") + "명";
+      option.append(checkbox, inviteLink, count);
+      hostContainer.append(option);
     }
     updateSelection();
   }

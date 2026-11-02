@@ -1,10 +1,14 @@
 import { findAdminSession } from "../services/SessionService.js";
+import { config } from "../config/env.js";
+
 export function isSameOrigin(request) {
   const origin = request.get("origin");
   if (!origin) return false;
   try {
-    const expectedOrigin = request.protocol + "://" + request.get("host");
-    return new URL(origin).origin === expectedOrigin;
+    const requestOrigin = request.protocol + "://" + request.get("host");
+    const suppliedOrigin = new URL(origin).origin;
+    const configuredOrigin = new URL(config.publicBaseUrl).origin;
+    return suppliedOrigin === requestOrigin || suppliedOrigin === configuredOrigin;
   } catch {
     return false;
   }

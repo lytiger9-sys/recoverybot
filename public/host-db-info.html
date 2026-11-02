@@ -7,7 +7,7 @@
   <title>호기 유저 정보 | Veloxcore Recovery</title>
   <link rel="stylesheet" href="/assets/style.css">
   <script src="/assets/app.js" defer></script>
-  <script src="/assets/host-db-info.js?v=user-delete-1" defer></script>
+  <script src="/assets/host-db-info.js?v=user-pagination-1" defer></script>
 </head>
 <body data-page="host-db-info">
   <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
@@ -19,12 +19,22 @@
       <section class="panel host-user-panel">
         <div class="section-heading"><div><h2>활성 유저 목록 (Active Users)</h2><p class="muted">현재 인증된 유저 · 액세스 토큰은 만료 시 복구 과정에서 자동 갱신됩니다.</p></div><span id="active-count" class="count-label">0명</span></div>
         <div class="table-wrap"><table><thead><tr><th>User ID</th><th>Username</th><th>Email</th><th>Status</th><th>마지막 갱신 시각</th><th>토큰 남은 시간</th><th>작업</th></tr></thead><tbody id="active-users"></tbody></table></div>
+        <div id="active-users-pagination" class="host-user-pagination" aria-label="활성 유저 페이지 이동"><button type="button" class="host-page-arrow" data-page-direction="prev" aria-label="이전 페이지"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button type="button" class="host-page-position" data-page-position aria-label="페이지 번호 입력"></button><button type="button" class="host-page-arrow" data-page-direction="next" aria-label="다음 페이지"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
       </section>
       <section class="panel host-user-panel expired-user-panel">
         <div class="section-heading"><div><h2>만료 및 재인증 필요 유저</h2><p class="muted">토큰 갱신 실패 또는 비활성 처리된 유저입니다.</p></div><span id="expired-count" class="count-label">0명</span></div>
         <div class="table-wrap"><table><thead><tr><th>User ID</th><th>Username</th><th>Email</th><th>Status</th><th>마지막 갱신 시각</th><th>작업</th></tr></thead><tbody id="expired-users"></tbody></table></div>
+        <div id="expired-users-pagination" class="host-user-pagination" aria-label="만료 유저 페이지 이동"><button type="button" class="host-page-arrow" data-page-direction="prev" aria-label="이전 페이지"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button type="button" class="host-page-position" data-page-position aria-label="페이지 번호 입력"></button><button type="button" class="host-page-arrow" data-page-direction="next" aria-label="다음 페이지"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
       </section>
     </main>
   </div>
+  <dialog id="host-page-jump-dialog" class="panel host-page-jump-dialog" aria-labelledby="host-page-jump-title">
+    <form id="host-page-jump-form">
+      <h2 id="host-page-jump-title">페이지 이동</h2>
+      <p id="host-page-jump-range" class="muted"></p>
+      <label>페이지 번호<input id="host-page-jump-input" type="number" min="1" step="1" required></label>
+      <div class="host-page-jump-actions"><button type="button" class="button-quiet" data-close-page-jump>취소</button><button type="submit">이동</button></div>
+    </form>
+  </dialog>
 </body>
 </html>

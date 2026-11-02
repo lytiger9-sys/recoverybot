@@ -12,18 +12,28 @@ export const recoveryRoutes = Router();
 recoveryRoutes.use(requireAdmin);
 
 recoveryRoutes.get("/hosts", async (_request, response) => {
-  const hosts = await BotHost.find({ enabled: true }).select("name inviteLink").sort({ createdAt: 1 }).lean();
+  const hosts = await BotHost.find({ enabled: true }).select("name clientId inviteLink").sort({ createdAt: 1 }).lean();
   const counts = await RestoredUser.aggregate([
     { $match: { status: "ACTIVE", hostId: { $in: hosts.map((host) => host._id) } } },
     { $group: { _id: "$hostId", count: { $sum: 1 } } },
   ]);
   const countMap = new Map(counts.map((item) => [String(item._id), item.count]));
-  return response.json({ hosts: hosts.map((host) => ({
-    _id: host._id,
-    name: host.name,
-    inviteLink: host.inviteLink ?? "",
-    activeMemberCount: countMap.get(String(host._id)) ?? 0,
-  })) });
+  return response.json({ hosts: hosts.map((host) => {
+    let inviteLink = host.inviteLink ?? "";
+    if (!inviteLink && host.clientId) {
+      const url = new URL("https://discord.com/oauth2/authorize");
+      url.searchParams.set("client_id", host.clientId);
+      url.searchParams.set("scope", "bot applications.commands");
+      url.searchParams.set("permissions", "1");
+      inviteLink = url.toString();
+    }
+    return {
+      _id: host._id,
+      name: host.name,
+      inviteLink,
+      activeMemberCount: countMap.get(String(host._id)) ?? 0,
+    };
+  }) });
 });
 
 recoveryRoutes.get("/runs", async (_request, response) => {

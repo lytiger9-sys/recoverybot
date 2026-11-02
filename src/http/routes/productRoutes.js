@@ -15,7 +15,7 @@ productRoutes.get("/by-name/:productName", async (request, response) => {
   const product = await Product.findOne({ name: request.params.productName }).lean();
   if (!product) return response.status(404).json({ error: "상품을 찾을 수 없습니다." });
 
-  const allHosts = await BotHost.find().sort({ createdAt: 1, _id: 1 }).lean();
+  const allHosts = await BotHost.find({ enabled: true }).sort({ createdAt: 1, _id: 1 }).lean();
   const hostNumbers = new Map(allHosts.map((host, index) => [String(host._id), index + 1]));
   const selectedIds = new Set((product.hostIds ?? []).map(String));
   const selectedHosts = product.allHosts

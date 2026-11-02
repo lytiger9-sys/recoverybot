@@ -152,11 +152,7 @@ async function loadProducts() {
   const tbody = document.getElementById("products-rows");
   if (!tbody) return;
   try {
-    const [{ products }, { hosts }] = await Promise.all([
-      api("/api/admin/products"),
-      api("/api/admin/hosts"),
-    ]);
-    const hostNumbers = new Map(hosts.map((host, index) => [String(host._id), host.hostNumber ?? index + 1]));
+    const { products } = await api("/api/admin/products");
     tbody.replaceChildren();
     const visibleProducts = products.filter((product) => product.name.toLocaleLowerCase("ko-KR").includes(productsSearchQuery));
     const count = document.getElementById("products-count");
@@ -165,9 +161,6 @@ async function loadProducts() {
       const row = document.createElement("tr");
       row.append(cell(product.name));
       row.append(cell(Number(product.priceMinor).toLocaleString("ko-KR") + " " + product.currency));
-      const assignedHosts = (product.hostIds ?? []).map((hostId) => hostNumbers.get(String(hostId))).filter(Number.isInteger);
-      const productHostNumbers = product.allHosts ? hosts.map((host, index) => host.hostNumber ?? index + 1) : assignedHosts;
-      row.append(cell(productHostNumbers.length ? productHostNumbers.map((number) => `${number}호기`).join(", ") : "-"));
       row.append(cell(product.validityDays ? `${product.validityDays}일` : "영구"));
       const statusCell = cell(product.enabled ? "판매 중" : "중지");
       statusCell.className = product.enabled ? "product-status product-status-active" : "product-status product-status-paused";
@@ -217,7 +210,7 @@ async function loadProducts() {
     if (visibleProducts.length === 0) {
       const row = document.createElement("tr");
       const empty = cell(productsSearchQuery ? "검색 결과가 없습니다." : "등록된 상품이 없습니다.");
-      empty.colSpan = 7;
+      empty.colSpan = 6;
       empty.className = "table-empty";
       row.append(empty);
       tbody.append(row);
