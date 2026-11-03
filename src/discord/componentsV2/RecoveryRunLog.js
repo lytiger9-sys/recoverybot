@@ -9,6 +9,8 @@ const failureLabels = {
   discord_5xx: "Discord 서버 오류",
   discord_error: "Discord API 요청 실패",
   network_error: "Discord API 연결 오류",
+  member_check_failed: "Discord에서 대상 유저의 가입 상태를 확인할 수 없음",
+  membership_mismatch: "Discord 응답과 서버의 실제 가입 상태가 일치하지 않음",
   run_incomplete: "호기 중단 또는 대상 변경으로 미처리",
   host_offline: "호기 봇 오프라인",
   host_auth_failed: "호기 봇 인증 실패",

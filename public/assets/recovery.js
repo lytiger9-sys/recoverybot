@@ -111,6 +111,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       discord_5xx: "Discord 서버 오류",
       discord_error: "Discord API 오류",
       network_error: "네트워크 오류",
+      member_check_failed: "대상 유저 가입 상태 확인 실패",
+      membership_mismatch: "Discord 응답과 실제 가입 상태 불일치",
       run_incomplete: "호기 중단 또는 대상 변경으로 미처리",
       host_offline: "호기 봇 오프라인",
       host_auth_failed: "호기 봇 인증 실패",
