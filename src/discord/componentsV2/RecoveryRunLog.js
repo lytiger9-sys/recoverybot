@@ -39,8 +39,10 @@ export function buildRecoveryRunLog(run, hosts, license) {
     "실패 인원: **" + Number(run.failed ?? 0).toLocaleString("ko-KR") + "명**",
     "이미 서버에 있던 인원: **" + Number(run.alreadyMember ?? 0).toLocaleString("ko-KR") + "명**",
     "대상 서버 ID: `" + run.targetGuildId + "`",
+    "실행 구분: **" + (run.licenseId ? "라이선스 복구" : "관리자 직접 복구") + "**",
     "사용 호기: **" + (hosts.map((host) => host.name).join(", ") || "삭제된 호기") + "**",
   ];
+  if (license?.productName) lines.push("상품: **" + license.productName + "**");
   if (license?.code) lines.push("라이선스: `" + license.code + "`");
 
   const reasons = readFailureReasons(run.failureReasons)

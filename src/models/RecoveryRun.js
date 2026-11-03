@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
   licenseId: { type: mongoose.Schema.Types.ObjectId, ref: "License", default: null },
   retryOfRunId: { type: mongoose.Schema.Types.ObjectId, ref: "RecoveryRun", default: null },
   licenseApprovalRequestId: { type: mongoose.Schema.Types.ObjectId, ref: "LicenseApprovalRequest", default: null },
+  expectedMemberCountAtRun: { type: Number, min: 0, default: null },
   targetGuildId: { type: String, required: true },
   targetUserIds: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: "RestoredUser" }], default: undefined },
   completedUserIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "RestoredUser" }],

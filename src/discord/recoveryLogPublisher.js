@@ -16,7 +16,7 @@ export async function publishRecoveryRunLog(run) {
   if (!channel?.isTextBased()) throw new Error("복구 로그 채널을 찾을 수 없습니다.");
   const [hosts, license] = await Promise.all([
     BotHost.find({ _id: { $in: run.hostIds } }).select("name").sort({ createdAt: 1 }).lean(),
-    run.licenseId ? License.findById(run.licenseId).select("code").lean() : null,
+    run.licenseId ? License.findById(run.licenseId).select("code productName").lean() : null,
   ]);
   await channel.send({
     flags: MessageFlags.IsComponentsV2,

@@ -132,6 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           : run.status === "COMPLETED"
             ? "완료 (" + (Number(run.succeeded ?? 0) + Number(run.alreadyMember ?? 0)) + "/" + total + ")"
             : statusLabels[run.status] ?? run.status,
+        run.recoveryType === "LICENSE" ? "라이선스" + (run.licenseName ? " · " + run.licenseName : "") : "관리자 직접",
         run.currentHostName || "-",
       ];
       for (const value of values) {

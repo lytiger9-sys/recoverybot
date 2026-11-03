@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { BotHost } from "../../models/BotHost.js";
 import { RestoredUser } from "../../models/RestoredUser.js";
 import { RecoveryRun } from "../../models/RecoveryRun.js";
+import { License } from "../../models/License.js";
 import { requireAdmin } from "../../middleware/adminAuth.js";
 import { config } from "../../config/env.js";
 import { checkHostsInGuild } from "../../services/RecoveryService.js";
@@ -38,8 +39,15 @@ recoveryRoutes.get("/hosts", async (_request, response) => {
 
 recoveryRoutes.get("/runs", async (_request, response) => {
   const runs = await RecoveryRun.find().sort({ createdAt: -1 }).limit(10).lean();
+  const licenseIds = [...new Set(runs.map((run) => run.licenseId).filter(Boolean).map(String))];
+  const licenses = licenseIds.length
+    ? await License.find({ _id: { $in: licenseIds } }).select("productName").lean()
+    : [];
+  const licenseNames = new Map(licenses.map((license) => [String(license._id), license.productName]));
   return response.json({ runs: runs.map((run) => ({
     ...run,
+    recoveryType: run.licenseId ? "LICENSE" : "ADMIN_DIRECT",
+    licenseName: run.licenseId ? licenseNames.get(String(run.licenseId)) ?? "라이선스" : "",
     failureReasons: run.failureReasons instanceof Map ? Object.fromEntries(run.failureReasons) : (run.failureReasons ?? {}),
   })) });
 });

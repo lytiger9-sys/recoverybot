@@ -188,19 +188,35 @@ body[data-page="auto-recharge"] input[type="color"] { background: #090a0b; borde
 body[data-page="auto-recharge"] button[type="submit"] { background: #c8a45b; color: #17130b; }
 progress { display: block; width: 130px; height: 10px; accent-color: #315ee8; }
 .progress-label { display: block; margin-top: 4px; color: #6d7888; font-size: 12px; white-space: nowrap; }
-.recovery-runs-table { table-layout: fixed; min-width: 1360px; }
-.recovery-runs-table col:nth-child(1) { width: 13%; }
-.recovery-runs-table col:nth-child(2) { width: 15%; }
-.recovery-runs-table col:nth-child(3) { width: 11%; }
-.recovery-runs-table col:nth-child(4) { width: 15%; }
-.recovery-runs-table col:nth-child(5) { width: 13%; }
-.recovery-runs-table col:nth-child(6) { width: 7%; }
-.recovery-runs-table col:nth-child(7) { width: 8%; }
-.recovery-runs-table col:nth-child(8) { width: 6%; }
-.recovery-runs-table col:nth-child(9) { width: 7%; }
-.recovery-runs-table col:nth-child(10) { width: 5%; }
+.recovery-runs-table { table-layout: fixed; min-width: 1420px; }
+.recovery-runs-table col:nth-child(1) { width: 12%; }
+.recovery-runs-table col:nth-child(2) { width: 14%; }
+.recovery-runs-table col:nth-child(3) { width: 9%; }
+.recovery-runs-table col:nth-child(4) { width: 10%; }
+.recovery-runs-table col:nth-child(5) { width: 12%; }
+.recovery-runs-table col:nth-child(6) { width: 12%; }
+.recovery-runs-table col:nth-child(7) { width: 6%; }
+.recovery-runs-table col:nth-child(8) { width: 7%; }
+.recovery-runs-table col:nth-child(9) { width: 5%; }
+.recovery-runs-table col:nth-child(10) { width: 8%; }
+.recovery-runs-table col:nth-child(11) { width: 5%; }
 .recovery-runs-table th, .recovery-runs-table td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recovery-runs-table progress { max-width: 100%; }
+.license-detail-dialog { width: min(1050px, calc(100vw - 32px)); max-height: min(86vh, 900px); overflow: auto; padding: 24px; }
+.license-detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.license-detail-header h2, .license-detail-header p { margin: 0; }
+.license-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.license-detail-item { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-raised); }
+.license-detail-item span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 12px; }
+.license-detail-item strong { display: block; overflow-wrap: anywhere; font-size: 14px; }
+.license-detail-dialog h3 { margin: 22px 0 12px; }
+.license-run-list { display: grid; gap: 12px; }
+.license-run-card { padding: 16px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-raised); }
+.license-run-card h4 { margin: 0 0 13px; }
+.license-run-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+.license-run-note { margin: 12px 0 0; color: var(--muted); overflow-wrap: anywhere; }
+.license-detail-empty { margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); }
+@media (max-width: 700px) { .license-detail-grid, .license-run-grid { grid-template-columns: 1fr; } }
 
 /* Neutral dark theme shared by all admin pages. */
 :root {
@@ -394,7 +410,9 @@ body[data-page="licenses"] .license-status-tabs { gap: 7px; margin: 0 0 14px; pa
 body[data-page="licenses"] .license-status-tabs button { padding: 8px 13px; border: 1px solid transparent; border-radius: 8px; font-size: 13px; }
 body[data-page="licenses"] .license-status-tabs button.active { background: #3a3b3f; border-color: #55565a; }
 body[data-page="licenses"] .table-wrap { border: 1px solid var(--line); border-radius: 10px; }
-body[data-page="licenses"] table { min-width: 1040px; }
+body[data-page="licenses"] table { min-width: 1180px; }
+body[data-page="licenses"] .license-row-actions { white-space: nowrap; }
+body[data-page="licenses"] .license-row-actions button + button { margin-left: 6px; }
 body[data-page="licenses"] th { padding: 13px 14px; background: #202124; color: #bcbec2; font-size: 12px; white-space: nowrap; }
 body[data-page="licenses"] td { padding: 14px; color: #d7d7d9; }
 body[data-page="licenses"] tbody tr:hover { background: #202124; }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>라이선스 관리 | 복구봇 관리</title>
-  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png"><link rel="stylesheet" href="/assets/style.css?v=toast-hover-title-1"><script src="/assets/app.js" defer></script><script src="/assets/licenses.js?v=license-auto-hosts-2" defer></script>
+  <link rel="icon" type="image/png" href="/assets/veloxcore-logo.png"><link rel="stylesheet" href="/assets/style.css?v=license-run-details-1"><script src="/assets/app.js" defer></script><script src="/assets/licenses.js?v=license-run-details-1" defer></script><script src="/assets/license-details.js?v=license-run-details-1" defer></script>
 </head>
 <body data-page="licenses">
   <header class="topbar"><a class="brand" href="/" aria-label="메인 페이지"><img src="/assets/veloxcore-logo.png" alt=""><span>𝗩𝗲𝗹𝗼𝘅𝗰𝗼𝗿𝗲 𝗥𝗲𝗰𝗼𝘃𝗲𝗿𝘆</span></a><div class="top-actions"><span id="admin-name"></span><button class="button-quiet" data-logout>로그아웃</button></div></header>
@@ -41,10 +41,16 @@
           <button type="button" data-status="FAILED">실패</button>
           <button type="button" data-status="EXPIRED">만료됨</button>
         </div>
-        <div class="table-wrap"><table><thead><tr><th>라이선스 내용</th><th>발급 날짜</th><th>복구 호기</th><th>예상 인원</th><th>만료일</th><th>상태</th><th>거절 횟수</th><th>작업</th></tr></thead><tbody id="license-rows"></tbody></table></div>
+        <div class="table-wrap"><table><thead><tr><th>라이선스 내용</th><th>발급 날짜</th><th>복구 호기</th><th>예상 인원</th><th>만료일</th><th>상태</th><th>거절 횟수</th><th>관리</th></tr></thead><tbody id="license-rows"></tbody></table></div>
         <div class="license-pagination"><button type="button" id="license-prev" class="button-quiet">이전</button><span id="license-page"></span><button type="button" id="license-next" class="button-quiet">다음</button></div>
       </section>
     </main>
   </div>
+  <dialog id="license-detail-dialog" class="panel license-detail-dialog" aria-labelledby="license-detail-title">
+    <div class="license-detail-header"><div><h2 id="license-detail-title">라이선스 실행 정보</h2><p id="license-detail-subtitle" class="muted"></p></div><button type="button" class="button-quiet button-small" data-close-license-details>닫기</button></div>
+    <div id="license-detail-summary" class="license-detail-grid"></div>
+    <h3>복구 실행 이력</h3>
+    <div id="license-detail-runs" class="license-run-list"></div>
+  </dialog>
 </body>
 </html>

@@ -95,6 +95,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         row.append(cell);
       }
       const actionCell = document.createElement("td");
+      actionCell.className = "license-row-actions";
+      const manage = document.createElement("button");
+      manage.type = "button";
+      manage.className = "button-quiet button-small";
+      manage.textContent = "관리";
+      manage.addEventListener("click", () => document.dispatchEvent(new CustomEvent("license:show-details", { detail: { licenseId: license._id, button: manage } })));
+      actionCell.append(manage);
       if (license.status === "FAILED" && license.recoveryRunId) {
         const resume = document.createElement("button");
         resume.type = "button";
@@ -112,8 +119,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         });
         actionCell.append(resume);
-      } else {
-        actionCell.textContent = "—";
       }
       row.append(actionCell);
       rows.append(row);

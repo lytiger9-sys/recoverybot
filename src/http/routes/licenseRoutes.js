@@ -5,6 +5,7 @@ import { License } from "../../models/License.js";
 import { Product } from "../../models/Product.js";
 import { RestoredUser } from "../../models/RestoredUser.js";
 import { RecoveryRun } from "../../models/RecoveryRun.js";
+import { LicenseApprovalRequest } from "../../models/LicenseApprovalRequest.js";
 import { requireAdmin } from "../../middleware/adminAuth.js";
 import { createLicenseDefinition, expireOutdatedLicenses, LicenseError } from "../../services/LicenseService.js";
 import { checkHostsInGuild } from "../../services/RecoveryService.js";
@@ -14,6 +15,58 @@ import { config } from "../../config/env.js";
 
 export const licenseRoutes = Router();
 licenseRoutes.use(requireAdmin);
+
+licenseRoutes.get("/:licenseId/details", async (request, response) => {
+  if (!mongoose.isValidObjectId(request.params.licenseId)) return response.status(400).json({ error: "라이선스 ID가 올바르지 않습니다." });
+  const license = await License.findById(request.params.licenseId).lean();
+  if (!license) return response.status(404).json({ error: "라이선스를 찾을 수 없습니다." });
+  const runs = await RecoveryRun.find({ licenseId: license._id }).sort({ createdAt: -1 }).lean();
+  const hostIds = [...new Set([...license.hostIds, ...runs.flatMap((run) => run.hostIds ?? [])].map(String))];
+  const requestIds = runs.map((run) => run.licenseApprovalRequestId).filter(Boolean);
+  const [hosts, approvalRequests] = await Promise.all([
+    BotHost.find({ _id: { $in: hostIds } }).select("name").lean(),
+    requestIds.length ? LicenseApprovalRequest.find({ _id: { $in: requestIds } }).lean() : [],
+  ]);
+  const hostNames = new Map(hosts.map((host) => [String(host._id), host.name]));
+  const requestById = new Map(approvalRequests.map((item) => [String(item._id), item]));
+  return response.json({
+    license: {
+      _id: license._id,
+      code: license.code,
+      productName: license.productName,
+      purchaserDiscordId: license.purchaserDiscordId,
+      createdAt: license.createdAt,
+      expiresAt: license.expiresAt,
+      expectedMemberCount: license.expectedMemberCount,
+      hostNames: license.hostIds.map((id) => hostNames.get(String(id)) ?? "삭제된 호기"),
+    },
+    runs: runs.map((run) => {
+      const approval = requestById.get(String(run.licenseApprovalRequestId));
+      const completedMemberCount = Array.isArray(run.completedUserIds)
+        ? run.completedUserIds.length
+        : Number(run.succeeded ?? 0) + Number(run.alreadyMember ?? 0);
+      return {
+        _id: run._id,
+        status: run.status,
+        startedAt: run.startedAt ?? run.createdAt,
+        completedAt: run.completedAt ?? null,
+        targetGuildId: run.targetGuildId,
+        targetGuildName: approval?.targetGuildName ?? "",
+        requesterUsername: approval?.requesterUsername ?? "정보 없음",
+        requesterDiscordId: approval?.requesterDiscordId ?? "",
+        hostNames: (run.hostIds ?? []).map((id) => hostNames.get(String(id)) ?? "삭제된 호기"),
+        expectedMemberCount: run.expectedMemberCountAtRun ?? license.expectedMemberCount,
+        targetMemberCount: run.overallTotal ?? run.total ?? license.expectedMemberCount,
+        succeeded: Number(run.succeeded ?? 0),
+        alreadyMember: Number(run.alreadyMember ?? 0),
+        completedMemberCount,
+        failed: Number(run.failed ?? 0),
+        failureReason: run.message ?? "",
+        retryOfRunId: run.retryOfRunId ?? null,
+      };
+    }),
+  });
+});
 
 licenseRoutes.get("/", async (request, response) => {
   await expireOutdatedLicenses();
@@ -87,6 +140,8 @@ licenseRoutes.post("/:licenseId/resume", async (request, response) => {
       targetUserIds: remainingUsers.map((user) => user._id),
       completedUserIds,
       overallTotal,
+      expectedMemberCountAtRun: previousRun.expectedMemberCountAtRun ?? license.expectedMemberCount,
+      licenseApprovalRequestId: previousRun.licenseApprovalRequestId ?? null,
       total,
       status: "QUEUED",
       delayMs: config.recoveryDelayMs,

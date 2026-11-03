@@ -326,6 +326,7 @@ async function startApprovedRecovery(request, license) {
     delayMs: config.recoveryDelayMs,
     licenseId: license._id,
     licenseApprovalRequestId: request._id,
+    expectedMemberCountAtRun: license.expectedMemberCount,
   });
   await Promise.all([
     License.updateOne({ _id: license._id, status: "IN_PROGRESS", activeRequestId: request._id }, { $set: { recoveryRunId: run._id, usedAt: new Date() } }),
