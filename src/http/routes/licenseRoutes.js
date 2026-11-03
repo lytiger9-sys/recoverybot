@@ -64,12 +64,17 @@ licenseRoutes.post("/:licenseId/resume", async (request, response) => {
   const checks = await checkHostsInGuild(hosts, previousRun.targetGuildId);
   const blockedHosts = checks.filter((item) => !item.present || !item.canAddMembers);
   if (blockedHosts.length) return response.status(409).json({ error: "이전 대상 서버에서 호기 초대와 멤버 추가 권한을 확인해 주세요: " + blockedHosts.map((host) => host.name).join(", ") });
-  const total = await RestoredUser.countDocuments({ hostId: { $in: license.hostIds }, status: "ACTIVE" });
-  if (!total) return response.status(409).json({ error: "다시 시도할 ACTIVE 멤버가 없습니다." });
+  const completedUserIds = Array.isArray(previousRun.completedUserIds) ? previousRun.completedUserIds : [];
+  const targetFilter = { hostId: { $in: license.hostIds }, status: "ACTIVE", _id: { $nin: completedUserIds } };
+  if (Array.isArray(previousRun.targetUserIds)) targetFilter._id.$in = previousRun.targetUserIds;
+  const remainingUsers = await RestoredUser.find(targetFilter).select("_id").lean();
+  const total = remainingUsers.length;
+  if (!total) return response.status(409).json({ error: "다시 시도할 ACTIVE 멤버가 없습니다. 이미 성공했거나 재인증이 필요한 계정만 남았습니다." });
+  const overallTotal = Number(previousRun.overallTotal ?? previousRun.total ?? license.recoveryTotal ?? license.expectedMemberCount ?? total);
 
   const locked = await License.findOneAndUpdate(
     { _id: license._id, status: "FAILED", recoveryRunId: previousRun._id },
-    { $set: { status: "IN_PROGRESS", recoverySucceeded: 0, recoveryTotal: total, failureReason: "", activeRequestId: null } },
+    { $set: { status: "IN_PROGRESS", recoverySucceeded: completedUserIds.length, recoveryTotal: overallTotal, failureReason: "", activeRequestId: null } },
     { returnDocument: "after" },
   );
   if (!locked) return response.status(409).json({ error: "라이선스 상태가 변경됐습니다. 목록을 새로고침해 주세요." });
@@ -79,6 +84,9 @@ licenseRoutes.post("/:licenseId/resume", async (request, response) => {
     run = await RecoveryRun.create({
       hostIds: license.hostIds,
       targetGuildId: previousRun.targetGuildId,
+      targetUserIds: remainingUsers.map((user) => user._id),
+      completedUserIds,
+      overallTotal,
       total,
       status: "QUEUED",
       delayMs: config.recoveryDelayMs,
@@ -95,12 +103,12 @@ licenseRoutes.post("/:licenseId/resume", async (request, response) => {
     if (run) await RecoveryRun.deleteOne({ _id: run._id, status: "QUEUED" });
     await License.updateOne(
       { _id: license._id, status: "IN_PROGRESS", recoveryRunId: previousRun._id },
-      { $set: { status: "FAILED", recoverySucceeded: license.recoverySucceeded ?? 0, recoveryTotal: license.recoveryTotal ?? 0, failureReason: license.failureReason ?? "" } },
+      { $set: { status: "FAILED", recoverySucceeded: completedUserIds.length, recoveryTotal: overallTotal, failureReason: license.failureReason ?? "" } },
     );
     throw error;
   }
   enqueueRecoveryRun(run._id);
-  return response.status(202).json({ runId: run.id, total, targetGuildId: previousRun.targetGuildId, status: run.status });
+  return response.status(202).json({ runId: run.id, total, skipped: completedUserIds.length, targetGuildId: previousRun.targetGuildId, status: run.status });
 });
 
 licenseRoutes.post("/", async (request, response) => {

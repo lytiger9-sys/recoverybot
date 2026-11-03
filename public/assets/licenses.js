@@ -103,8 +103,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         resume.addEventListener("click", async () => {
           resume.disabled = true;
           try {
-            await licenseApi("/api/admin/licenses/" + encodeURIComponent(license._id) + "/resume", { method: "POST" });
-            setMessage("실패한 복구를 같은 서버와 호기로 다시 시작했습니다. 이미 가입된 멤버는 기존 멤버로 처리됩니다.");
+            const resumed = await licenseApi("/api/admin/licenses/" + encodeURIComponent(license._id) + "/resume", { method: "POST" });
+            setMessage("복구를 이어서 시작했습니다. 이미 성공한 " + Number(resumed.skipped ?? 0).toLocaleString("ko-KR") + "명은 건너뛰고 남은 " + Number(resumed.total ?? 0).toLocaleString("ko-KR") + "명을 처리합니다.");
             await loadLicenses();
           } catch (error) {
             resume.disabled = false;

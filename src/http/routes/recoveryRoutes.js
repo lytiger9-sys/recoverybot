@@ -66,11 +66,14 @@ recoveryRoutes.post("/runs", async (request, response) => {
     });
   }
 
-  const total = await RestoredUser.countDocuments({ hostId: { $in: hostIds }, status: "ACTIVE" });
+  const targetUsers = await RestoredUser.find({ hostId: { $in: hostIds }, status: "ACTIVE" }).select("_id").lean();
+  const total = targetUsers.length;
   if (!total) return response.status(409).json({ error: "선택한 호기에 복구할 ACTIVE 멤버가 없습니다." });
   const run = await RecoveryRun.create({
     hostIds,
     targetGuildId: guildId,
+    targetUserIds: targetUsers.map((user) => user._id),
+    overallTotal: total,
     total,
     status: "QUEUED",
     delayMs: config.recoveryDelayMs,

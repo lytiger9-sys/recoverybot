@@ -108,8 +108,8 @@ async function failRun(run, message, reasonCode) {
   });
   if (run.licenseId) await License.updateOne({ _id: run.licenseId, status: "IN_PROGRESS" }, { $set: {
     status: "FAILED", completedAt: new Date(), activeRequestId: null,
-    recoverySucceeded: Number(run.succeeded ?? 0) + Number(run.alreadyMember ?? 0),
-    recoveryTotal: Number(run.total ?? 0), failureReason: message,
+    recoverySucceeded: Array.isArray(run.completedUserIds) ? run.completedUserIds.length : Number(run.succeeded ?? 0) + Number(run.alreadyMember ?? 0),
+    recoveryTotal: Number(run.overallTotal ?? run.total ?? 0), failureReason: message,
   } });
   await RecoveryHostLock.deleteMany({ runId: run._id });
   await publishFinalLog(run._id);
@@ -151,8 +151,8 @@ async function synchronizeRuns() {
     if (!changed.modifiedCount) continue;
     if (run.licenseId) await License.updateOne({ _id: run.licenseId, status: "IN_PROGRESS" }, { $set: {
       status: "COMPLETED", completedAt, activeRequestId: null,
-      recoverySucceeded: Number(latestRun?.succeeded ?? 0) + Number(latestRun?.alreadyMember ?? 0),
-      recoveryTotal: Number(latestRun?.total ?? 0), failureReason: "",
+      recoverySucceeded: Array.isArray(latestRun?.completedUserIds) ? latestRun.completedUserIds.length : Number(latestRun?.succeeded ?? 0) + Number(latestRun?.alreadyMember ?? 0),
+      recoveryTotal: Number(latestRun?.overallTotal ?? latestRun?.total ?? 0), failureReason: "",
     } });
     await RecoveryHostLock.deleteMany({ runId: run._id });
     await publishFinalLog(run._id);

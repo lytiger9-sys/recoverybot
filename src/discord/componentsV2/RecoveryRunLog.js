@@ -26,13 +26,16 @@ function readFailureReasons(value) {
 
 export function buildRecoveryRunLog(run, hosts, license) {
   const total = Number(run.total ?? 0);
-  const successCount = Number(run.succeeded ?? 0) + Number(run.alreadyMember ?? 0);
+  const overallTotal = Number(run.overallTotal ?? total);
+  const successCount = Array.isArray(run.completedUserIds)
+    ? run.completedUserIds.length
+    : Number(run.succeeded ?? 0) + Number(run.alreadyMember ?? 0);
   const isFailed = run.status === "FAILED";
   const title = isFailed ? "복구 실패 로그" : "복구 성공 로그";
   const lines = [
     "결과: **" + (isFailed ? "실패" : "성공") + "**",
-    "전체 시도: **" + Number(run.processed ?? 0).toLocaleString("ko-KR") + "/" + total.toLocaleString("ko-KR") + "명**",
-    "가입 완료: **" + successCount.toLocaleString("ko-KR") + "/" + total.toLocaleString("ko-KR") + "명**",
+    "이번 작업 시도: **" + Number(run.processed ?? 0).toLocaleString("ko-KR") + "/" + total.toLocaleString("ko-KR") + "명**",
+    "누적 가입 완료: **" + successCount.toLocaleString("ko-KR") + "/" + overallTotal.toLocaleString("ko-KR") + "명**",
     "실패 인원: **" + Number(run.failed ?? 0).toLocaleString("ko-KR") + "명**",
     "이미 서버에 있던 인원: **" + Number(run.alreadyMember ?? 0).toLocaleString("ko-KR") + "명**",
     "대상 서버 ID: `" + run.targetGuildId + "`",

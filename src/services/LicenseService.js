@@ -315,10 +315,13 @@ async function startApprovedRecovery(request, license) {
     await LicenseApprovalRequest.updateOne({ _id: request._id }, { $set: { status: "FAILED" } });
     throw new LicenseError("HOST_NOT_READY", "승인 후 호기 상태가 변경되어 복구를 시작하지 못했습니다.");
   }
-  const total = await RestoredUser.countDocuments({ hostId: { $in: license.hostIds }, status: "ACTIVE" });
+  const targetUsers = await RestoredUser.find({ hostId: { $in: license.hostIds }, status: "ACTIVE" }).select("_id").lean();
+  const total = targetUsers.length;
   const run = await RecoveryRun.create({
     hostIds: license.hostIds,
     targetGuildId: request.targetGuildId,
+    targetUserIds: targetUsers.map((user) => user._id),
+    overallTotal: total,
     total,
     delayMs: config.recoveryDelayMs,
     licenseId: license._id,
