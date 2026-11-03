@@ -1,5 +1,5 @@
 import {
-  ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, Client, MessageFlags,
+  ActionRowBuilder, ButtonBuilder, ButtonStyle, Client, MessageFlags,
   GatewayIntentBits, ModalBuilder, PermissionFlagsBits, SlashCommandBuilder,
   TextInputBuilder, TextInputStyle,
 } from "discord.js";
@@ -36,18 +36,17 @@ let mainBotLoginInProgress = false;
 let nextMainBotAttemptAt = 0;
 const adminPermission = PermissionFlagsBits.Administrator.toString();
 const rechargePanelCommand = new SlashCommandBuilder()
-  .setName("recharge-panel").setDescription("자동충전 패널을 지정 채널에 게시합니다.")
-  .setDefaultMemberPermissions(adminPermission)
-  .addChannelOption((option) => option.setName("channel").setDescription("게시 채널").addChannelTypes(ChannelType.GuildText).setRequired(true));
+  .setName("충전패널").setDescription("자동충전 패널을 현재 채널에 게시합니다.")
+  .setDefaultMemberPermissions(adminPermission);
 const manualRechargeCommand = new SlashCommandBuilder()
   .setName("수동충전").setDescription("유저 잔액을 수동으로 충전하거나 차감합니다.")
   .setDefaultMemberPermissions(adminPermission)
   .addUserOption((option) => option.setName("유저").setDescription("잔액을 조정할 유저").setRequired(true))
   .addIntegerOption((option) => option.setName("금액").setDescription("원 단위 금액, 음수는 차감").setMinValue(-Number.MAX_SAFE_INTEGER).setMaxValue(Number.MAX_SAFE_INTEGER).setRequired(true));
 const recoverCommand = new SlashCommandBuilder()
-  .setName("recover").setDescription("라이선스로 지정한 서버의 복구를 요청합니다.")
-  .addStringOption((option) => option.setName("license").setDescription("VC-로 시작하는 14자리 라이선스 코드").setMinLength(17).setMaxLength(17).setRequired(true))
-  .addStringOption((option) => option.setName("server_id").setDescription("복구할 대상 서버 ID").setMinLength(17).setMaxLength(22).setRequired(true));
+  .setName("복구").setDescription("라이선스로 지정한 서버의 복구를 요청합니다.")
+  .addStringOption((option) => option.setName("라이선스").setDescription("VC-로 시작하는 14자리 라이선스 코드").setMinLength(17).setMaxLength(17).setRequired(true))
+  .addStringOption((option) => option.setName("서버id").setDescription("복구할 대상 서버 ID").setMinLength(17).setMaxLength(22).setRequired(true));
 
 function normalizeName(value) { return value.normalize("NFKC").toLocaleLowerCase("ko-KR").replace(/[\s\u200b-\u200d\ufeff]/g, ""); }
 async function getRechargeSettings() { return AutoRechargeSettings.findOne({ key: "default" }).lean(); }
@@ -129,15 +128,15 @@ function configureClient(client) {
   client.on("interactionCreate", async (interaction) => {
     try {
       if (interaction.isChatInputCommand()) {
-        if (interaction.commandName === "recover") {
-          const targetGuildId = interaction.options.getString("server_id", true).trim();
+        if (interaction.commandName === "복구") {
+          const targetGuildId = interaction.options.getString("서버id", true).trim();
           if (!/^\d{17,22}$/.test(targetGuildId)) {
             return ephemeralV2(interaction, "서버 ID 확인", ["복구할 Discord 서버 ID를 확인해 주세요."]);
           }
           await interaction.deferReply({ flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 });
           try {
             const result = await submitLicenseRecoveryRequest({
-              code: interaction.options.getString("license", true),
+              code: interaction.options.getString("라이선스", true),
               requesterDiscordId: interaction.user.id,
               requesterUsername: interaction.user.username,
               targetGuildId,
@@ -187,9 +186,10 @@ function configureClient(client) {
             });
           }
         }
-        if (interaction.commandName === "recharge-panel") {
+        if (interaction.commandName === "충전패널") {
+          if (!interaction.inGuild() || !interaction.channel?.isTextBased()) return ephemeralV2(interaction, "게시할 수 없음", ["서버의 일반 채널에서 명령어를 실행해 주세요."]);
           if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) return ephemeralV2(interaction, "권한 없음", ["서버 관리자만 사용할 수 있습니다."]);
-          const channel = interaction.options.getChannel("channel", true);
+          const channel = interaction.channel;
           const settings = await getRechargeSettings();
           await channel.send({ flags: MessageFlags.IsComponentsV2, components: [buildRechargePanel(settings)] });
           return ephemeralV2(interaction, "충전 패널 게시 완료", ["충전 패널을 " + channel.toString() + " 채널에 게시했습니다."]);
