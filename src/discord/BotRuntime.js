@@ -7,7 +7,6 @@ import { BotHost } from "../models/BotHost.js";
 import { AutoRechargeSettings } from "../models/AutoRechargeSettings.js";
 import { RechargeRequest } from "../models/RechargeRequest.js";
 import { config } from "../config/env.js";
-import { UserBalance } from "../models/UserBalance.js";
 import { buildRechargeInfoCard, buildRechargePanel } from "./componentsV2/RechargePanel.js";
 import { buildRechargeRequestLog } from "./componentsV2/RechargeRequestLog.js";
 import { buildApprovalPanel, buildLicenseDeliveryCard, buildLicenseInfoCard, buildProductConfirm, buildProductMenu, buildPurchaseReviewLog, buildPurchaseReviewMenu, buildPurchaseReviewModal } from "./componentsV2/LicensePanels.js";
@@ -28,6 +27,8 @@ import { getPurchasesAwaitingReview, getReviewablePurchase, submitPurchaseReview
 import { startMainBotPresence } from "../services/MainBotPresence.js";
 import { probeDiscordGatewayRest } from "./DiscordGatewayProbe.js";
 import { syncGuildCommands } from "./commandSync.js";
+import { buildUserInfoCard } from "./componentsV2/UserInfoCard.js";
+import { getUserInfo } from "../services/UserInfoService.js";
 
 let mainClient;
 let refreshTimer;
@@ -316,11 +317,11 @@ function configureClient(client) {
         return;
       }
       if (interaction.isButton() && interaction.customId === "recharge:balance") {
-        const balance = await UserBalance.findOne({ discordUserId: interaction.user.id }).lean();
-        const cash = Number(balance?.cashMinor ?? 0).toLocaleString("ko-KR");
-        return interaction.reply({
-          flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
-          components: [buildRechargeInfoCard({ title: "내 잔액", lines: ["보유 캐시: **" + cash + "원**"] })],
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2 });
+        const info = await getUserInfo(interaction.user.id);
+        return interaction.editReply({
+          flags: MessageFlags.IsComponentsV2,
+          components: [buildUserInfoCard(interaction.user, info)],
         });
       }
       if (interaction.isButton() && interaction.customId === "recharge:open") {
