@@ -13,6 +13,7 @@ JavaScript, Discord.js, Express, MongoDB Atlas로 구성된 관리자 웹사이�
    - `RECOVERY_DELAY_MS`: 계정 사이 복구 대기 시간(기본 2000ms, 1000~60000ms).
    - `RECOVERY_APPROVAL_CHANNEL_ID`: 메인봇의 라이선스 복구 승인 요청을 받을 관리자 채널 ID.
    - `RECOVERY_LOG_CHANNEL_ID`: 웹사이트 및 라이선스 복구의 성공·실패 결과를 Components V2로 기록할 관리자 전용 채널 ID.
+   - `AUTH_LOG_CHANNEL_ID`: OAuth 인증 성공·실패 로그를 Components V2로 보낼 메인봇 채널 ID.
    - `RECOVERY_ADMIN_USER_ID`: 승인·거절 버튼을 사용할 관리자 Discord 사용자 ID. 해당 사용자의 라이선스 명령은 자동 승인됩니다.
 3. Discord Developer Portal에서 **각 호기 앱마다** OAuth Redirect URL로 `{PUBLIC_BASE_URL}/oauth/callback`을 등록합니다. 예를 들어 로컬 주소라면 `http://localhost:3000/oauth/callback`입니다.
 4. Atlas IP Access List에 실행 서버의 IP를 등록합니다.
@@ -30,6 +31,7 @@ JavaScript, Discord.js, Express, MongoDB Atlas로 구성된 관리자 웹사이�
 
 - `/hosts`에서 호기마다 이름, Discord OAuth Client ID, Client Secret, 봇 토큰을 저장합니다. Client Secret과 봇 토큰은 AES-256-GCM 암호화 저장합니다. 봇 초대 링크는 선택 입력이며, Client ID와 일치하는 Discord OAuth 봇 초대 링크만 허용합니다.
 - 각 호기 봇에서 `/auth-panel channel:#채널`을 실행하면 Components V2 인증 패널이 게시됩니다. 유저는 버튼을 눌러 사이트에서 Discord 인증을 마치며, access/refresh token과 유저 정보를 해당 호기에 연결해 저장합니다.
+- 인증 결과는 `AUTH_LOG_CHANNEL_ID`에 유저 이름·ID, 서버·역할, 처리 사유를 Components V2로 기록합니다. 이 채널은 메인봇이 볼 수 있어야 합니다.
 - 각 호기 실행기는 해당 `BotHost` 문서의 `_id`를 `HOST_ID`로 지정해 MongoDB 설정을 읽습니다. 메인봇의 `/recover license:<코드> server_id:<서버 ID>`가 요청과 승인을 담당하고, 실행기는 공용 DB에 호기별 작업을 등록합니다. 각 호기는 자기 작업만 큐에서 가져와 자기 OAuth 앱의 유저 토큰과 자기 봇 토큰으로 실행합니다.
 - OAuth 인증은 `identify email guilds.join`을 요청합니다. 각 호기 봇 토큰은 그 호기의 OAuth 앱과 같은 Discord 앱에서 발급되어야 합니다.
 - `/recovery`에서 호기를 하나 이상 체크하고 대상 서버 ID를 입력합니다. 실행 전 각 봇이 그 서버에 들어가 있는지와 `Create Instant Invite` 권한을 검사합니다. 복구 작업은 호기별 잠금 큐를 사용하며, 이미 실행 중인 작업은 끝까지 우선합니다. 대기 작업은 단일 호기 작업을 먼저 실행하고, 같은 우선순위에서는 서버 ID가 낮은 작업을 먼저 고릅니다.

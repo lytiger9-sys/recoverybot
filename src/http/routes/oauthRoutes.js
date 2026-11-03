@@ -7,6 +7,7 @@ import { OAuthState } from "../../models/OAuthState.js";
 import { RestoredUser } from "../../models/RestoredUser.js";
 import { config } from "../../config/env.js";
 import { decryptSecret } from "../../security/secretEncryption.js";
+import { publishAuthLog } from "../../discord/authLogPublisher.js";
 
 export const oauthRoutes = Router();
 const hashState = (state) => createHash("sha256").update(state).digest("hex");
@@ -103,6 +104,7 @@ oauthRoutes.get("/callback", async (request, response) => {
     });
     if (!joinResponse.ok) {
       console.error("OAuth guild join failed with status", joinResponse.status);
+      await publishAuthLog({ user, host, guildName: authPanelDetails.guildName, roleName: authPanelDetails.roleName, success: false, reason: "서버 입장 실패 · HTTP " + joinResponse.status });
       return response.status(502).type("html").send(oauthResultPage({
         title: "인증은 완료됐지만 서버 입장에 실패했습니다.",
         message: "호기 봇이 대상 서버에 있고 초대 만들기 권한을 갖는지 확인해 주세요.",
@@ -115,6 +117,7 @@ oauthRoutes.get("/callback", async (request, response) => {
     });
     if (!roleResponse.ok) {
       console.error("OAuth role assignment failed with status", roleResponse.status);
+      await publishAuthLog({ user, host, guildName: authPanelDetails.guildName, roleName: authPanelDetails.roleName, success: false, reason: "역할 지급 실패 · HTTP " + roleResponse.status });
       return response.status(502).type("html").send(oauthResultPage({
         title: "인증은 완료됐지만 역할 지급에 실패했습니다.",
         message: "호기 봇의 역할 관리 권한과 역할 순서를 확인해 주세요.",
@@ -124,6 +127,14 @@ oauthRoutes.get("/callback", async (request, response) => {
     }
   }
   const displayName = user.global_name || user.username;
+  await publishAuthLog({
+    user,
+    host,
+    guildName: authPanelDetails?.guildName,
+    roleName: authPanelDetails?.roleName,
+    success: true,
+    reason: "디스코드 인증을 완료했습니다.",
+  });
   return response.type("html").send(oauthResultPage({
     title: "인증이 완료되었습니다.",
     message: displayName + " 님의 인증 정보가 저장되었습니다.",

@@ -29,6 +29,7 @@ import { probeDiscordGatewayRest } from "./DiscordGatewayProbe.js";
 import { syncGuildCommands } from "./commandSync.js";
 import { buildUserInfoCard } from "./componentsV2/UserInfoCard.js";
 import { getUserInfo } from "../services/UserInfoService.js";
+import { setAuthLogClient } from "./authLogPublisher.js";
 
 let mainClient;
 let refreshTimer;
@@ -450,9 +451,13 @@ export async function startBotRuntime() {
   if (!config.recoveryLogChannelId) console.warn("Recovery result logging is disabled; set RECOVERY_LOG_CHANNEL_ID in .env.");
   await ensureMainBotConnected();
   setRecoveryLogClient(mainClient);
+  setAuthLogClient(mainClient);
   await refreshHostBots();
   refreshTimer = setInterval(() => {
-    void ensureMainBotConnected().then(() => setRecoveryLogClient(mainClient));
+    void ensureMainBotConnected().then(() => {
+      setRecoveryLogClient(mainClient);
+      setAuthLogClient(mainClient);
+    });
     void refreshHostBots().catch((error) => console.error("Host bot refresh failed:", error?.name ?? "UnknownError"));
   }, 15_000);
   refreshTimer.unref?.();
