@@ -160,6 +160,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         .filter(([, count]) => Number(count) > 0)
         .map(([code, count]) => (failureLabels[code] ?? "기타 오류") + " " + Number(count) + "명")
         .join(", ") || run.message || "-";
+      reasonCell.title = reasonCell.textContent;
       row.append(reasonCell);
       const eta = document.createElement("td");
       eta.textContent = run.status === "COMPLETED" ? "완료" : run.status === "FAILED" ? "-" : formatDuration(run.estimatedRemainingSeconds);

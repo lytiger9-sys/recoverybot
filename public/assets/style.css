@@ -188,6 +188,19 @@ body[data-page="auto-recharge"] input[type="color"] { background: #090a0b; borde
 body[data-page="auto-recharge"] button[type="submit"] { background: #c8a45b; color: #17130b; }
 progress { display: block; width: 130px; height: 10px; accent-color: #315ee8; }
 .progress-label { display: block; margin-top: 4px; color: #6d7888; font-size: 12px; white-space: nowrap; }
+.recovery-runs-table { table-layout: fixed; min-width: 1360px; }
+.recovery-runs-table col:nth-child(1) { width: 13%; }
+.recovery-runs-table col:nth-child(2) { width: 15%; }
+.recovery-runs-table col:nth-child(3) { width: 11%; }
+.recovery-runs-table col:nth-child(4) { width: 15%; }
+.recovery-runs-table col:nth-child(5) { width: 13%; }
+.recovery-runs-table col:nth-child(6) { width: 7%; }
+.recovery-runs-table col:nth-child(7) { width: 8%; }
+.recovery-runs-table col:nth-child(8) { width: 6%; }
+.recovery-runs-table col:nth-child(9) { width: 7%; }
+.recovery-runs-table col:nth-child(10) { width: 5%; }
+.recovery-runs-table th, .recovery-runs-table td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recovery-runs-table progress { max-width: 100%; }
 
 /* Neutral dark theme shared by all admin pages. */
 :root {
