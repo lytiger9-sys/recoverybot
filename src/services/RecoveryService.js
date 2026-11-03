@@ -13,7 +13,10 @@ export async function checkHostsInGuild(hosts, guildId) {
       const token = decryptSecret(host.botToken, config.tokenEncryptionKey);
       const headers = { Authorization: "Bot " + token };
       const guildResponse = await discordRequest(API + "/guilds/" + guildId, { headers });
-      if (!guildResponse.ok) return { hostId: String(host._id), name: host.name, present: false, canAddMembers: false, status: guildResponse.status, stage: "guild" };
+      if (!guildResponse.ok) return {
+        hostId: String(host._id), name: host.name, present: false, canAddMembers: false,
+        status: guildResponse.status, stage: guildResponse.status === 401 ? "bot-auth" : "guild",
+      };
       const guild = await guildResponse.json();
       const meResponse = await discordRequest(API + "/users/@me", { headers });
       if (!meResponse.ok) return { hostId: String(host._id), name: host.name, present: true, canAddMembers: false, status: meResponse.status, stage: "bot-auth" };
@@ -21,12 +24,18 @@ export async function checkHostsInGuild(hosts, guildId) {
       const memberResponse = await discordRequest(API + "/guilds/" + guildId + "/members/" + me.id, { headers });
       if (!memberResponse.ok) return { hostId: String(host._id), name: host.name, present: false, canAddMembers: false, status: memberResponse.status, stage: "member" };
       const member = await memberResponse.json();
-      const roles = new Map((guild.roles ?? []).map((role) => [role.id, BigInt(role.permissions)]));
+      let roleList = guild.roles;
+      if (!Array.isArray(roleList) || roleList.length === 0) {
+        const rolesResponse = await discordRequest(API + "/guilds/" + guildId + "/roles", { headers });
+        if (!rolesResponse.ok) return { hostId: String(host._id), name: host.name, present: true, canAddMembers: false, status: rolesResponse.status, stage: "roles" };
+        roleList = await rolesResponse.json();
+      }
+      const roles = new Map(roleList.map((role) => [role.id, BigInt(role.permissions)]));
       const permissions = [guildId, ...(member.roles ?? [])].reduce((bits, roleId) => bits | (roles.get(roleId) ?? 0n), 0n);
       const canAddMembers = (permissions & 8n) === 8n || (permissions & 1n) === 1n;
-      return { hostId: String(host._id), name: host.name, present: true, canAddMembers, status: canAddMembers ? 200 : 403 };
+      return { hostId: String(host._id), name: host.name, present: true, canAddMembers, status: canAddMembers ? 200 : 403, stage: canAddMembers ? "ready" : "permissions" };
     } catch {
-      return { hostId: String(host._id), name: host.name, present: false, canAddMembers: false, status: 0 };
+      return { hostId: String(host._id), name: host.name, present: false, canAddMembers: false, status: 0, stage: "request" };
     }
   }));
 }

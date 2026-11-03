@@ -61,8 +61,8 @@ recoveryRoutes.post("/runs", async (request, response) => {
   if (missing.length || permissionMissing.length) {
     return response.status(409).json({
       error: "봇이 서버에 없거나 멤버 추가 권한이 부족합니다. 초대와 권한을 확인해 주세요.",
-      missingHosts: missing.map(({ name, status }) => ({ name, status })),
-      permissionHosts: permissionMissing.map(({ name }) => name),
+      missingHosts: missing.map(({ name, status, stage }) => ({ name, status, stage })),
+      permissionHosts: permissionMissing.map(({ name, status, stage }) => ({ name, status, stage })),
     });
   }
 

@@ -5,8 +5,18 @@ async function recoveryApi(path, options = {}) {
   if (response.status === 401) { window.location.assign("/login"); throw new Error("로그인이 필요합니다."); }
   const payload = response.status === 204 ? null : await response.json().catch(() => ({}));
   if (!response.ok) {
-    const missing = payload?.missingHosts?.map((host) => host.name).join(", ");
-    throw new Error((payload?.error ?? "요청을 처리하지 못했습니다.") + (missing ? " 미초대/권한 확인: " + missing : "") + (payload?.permissionHosts?.length ? " 초대 권한 필요: " + payload.permissionHosts.join(", ") : ""));
+    const describeHost = (host) => {
+      if (host.stage === "bot-auth" || host.status === 401) return host.name + " (봇 토큰 오류 401)";
+      if (host.status === 429) return host.name + " (Discord 요청 제한 429)";
+      if (Number(host.status) >= 500) return host.name + " (Discord 서버 오류 " + host.status + ")";
+      if (host.stage === "guild" || host.stage === "member") return host.name + " (서버 ID가 맞는지, 대상 서버에 봇이 들어와 있는지 확인 필요, HTTP " + host.status + ")";
+      if (host.stage === "roles") return host.name + " (역할 정보를 읽지 못함, HTTP " + host.status + ")";
+      if (host.stage === "request") return host.name + " (Discord 연결 오류)";
+      return host.name + " (Create Instant Invite 또는 Administrator 권한 필요, HTTP " + host.status + ")";
+    };
+    const missing = payload?.missingHosts?.map(describeHost).join(", ");
+    const permissions = payload?.permissionHosts?.map(describeHost).join(", ");
+    throw new Error((payload?.error ?? "요청을 처리하지 못했습니다.") + (missing ? " 확인 필요: " + missing : "") + (permissions ? " 초대 권한 필요: " + permissions : ""));
   }
   return payload;
 }
