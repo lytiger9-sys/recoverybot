@@ -104,7 +104,7 @@ oauthRoutes.get("/callback", async (request, response) => {
     });
     if (!joinResponse.ok) {
       console.error("OAuth guild join failed with status", joinResponse.status);
-      await publishAuthLog({ user, host, guildName: authPanelDetails.guildName, roleName: authPanelDetails.roleName, success: false, reason: "서버 입장 실패 · HTTP " + joinResponse.status });
+      await publishAuthLog({ request, user, host, guildName: authPanelDetails.guildName, roleName: authPanelDetails.roleName, success: false, reason: "서버 입장 실패 · HTTP " + joinResponse.status });
       return response.status(502).type("html").send(oauthResultPage({
         title: "인증은 완료됐지만 서버 입장에 실패했습니다.",
         message: "호기 봇이 대상 서버에 있고 초대 만들기 권한을 갖는지 확인해 주세요.",
@@ -117,7 +117,7 @@ oauthRoutes.get("/callback", async (request, response) => {
     });
     if (!roleResponse.ok) {
       console.error("OAuth role assignment failed with status", roleResponse.status);
-      await publishAuthLog({ user, host, guildName: authPanelDetails.guildName, roleName: authPanelDetails.roleName, success: false, reason: "역할 지급 실패 · HTTP " + roleResponse.status });
+      await publishAuthLog({ request, user, host, guildName: authPanelDetails.guildName, roleName: authPanelDetails.roleName, success: false, reason: "역할 지급 실패 · HTTP " + roleResponse.status });
       return response.status(502).type("html").send(oauthResultPage({
         title: "인증은 완료됐지만 역할 지급에 실패했습니다.",
         message: "호기 봇의 역할 관리 권한과 역할 순서를 확인해 주세요.",
@@ -128,6 +128,7 @@ oauthRoutes.get("/callback", async (request, response) => {
   }
   const displayName = user.global_name || user.username;
   await publishAuthLog({
+    request,
     user,
     host,
     guildName: authPanelDetails?.guildName,

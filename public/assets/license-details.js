@@ -21,7 +21,11 @@ function appendLicenseDetail(container, label, value) {
 }
 
 function formatLicenseDate(value) {
-  return value ? new Date(value).toLocaleString("ko-KR") : "-";
+  return value ? new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric", month: "numeric", day: "numeric",
+    hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).format(new Date(value)) : "-";
 }
 
 function renderLicenseRun(run, index, runCount) {

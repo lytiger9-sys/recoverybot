@@ -98,6 +98,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     return remainder + "초";
   }
 
+  function formatRunDate(value) {
+    return new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul",
+      year: "numeric", month: "numeric", day: "numeric",
+      hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+    }).format(new Date(value));
+  }
+
   async function loadRuns() {
     const { runs } = await recoveryApi("/api/admin/recovery/runs");
     runRows.replaceChildren();
@@ -127,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const total = Number(run.total ?? 0);
       const percent = total ? Math.min(100, Math.floor(processed * 100 / total)) : 0;
       const values = [
-        new Date(run.createdAt).toLocaleString("ko-KR"),
+        formatRunDate(run.createdAt),
         run.targetGuildId,
         run.status === "FAILED"
           ? "실패 (" + (Number(run.succeeded ?? 0) + Number(run.alreadyMember ?? 0)) + "/" + total + ")"

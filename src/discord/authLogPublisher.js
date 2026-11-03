@@ -11,7 +11,7 @@ function safeText(value, limit = 500) {
   return String(value || "정보 없음").replace(/[\r\n]+/g, " ").slice(0, limit);
 }
 
-export async function publishAuthLog({ user, host, guildName, roleName, success, reason }) {
+export async function publishAuthLog({ request, user, host, guildName, roleName, success, reason }) {
   if (!config.authLogChannelId) return;
   if (!authLogClient?.isReady()) {
     console.warn("Authentication log was skipped: main bot is offline.");
@@ -31,8 +31,10 @@ export async function publishAuthLog({ user, host, guildName, roleName, success,
       "**유저 ID**\n" + user.id,
       "**서버**\n" + safeText(guildName || (host?.name ? host.name + " 인증" : "인증 패널 없음")),
       "**지급 역할**\n" + safeText(roleName || "없음", 100),
+      "**IP**\n" + safeText(request.ip || request.socket?.remoteAddress, 100),
+      "**브라우저**\n" + safeText(request.get("user-agent"), 500),
       "**사유**\n" + safeText(reason || (success ? "디스코드 인증을 완료했습니다." : "인증 처리에 실패했습니다.")),
-      "-# " + new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }),
+      "-# " + new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date()),
     ];
     await channel.send({
       flags: MessageFlags.IsComponentsV2,
