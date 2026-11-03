@@ -34,13 +34,10 @@ let refreshTimer;
 let stopMainBotPresence;
 let mainBotLoginInProgress = false;
 let nextMainBotAttemptAt = 0;
-const adminPermission = PermissionFlagsBits.Administrator.toString();
 const rechargePanelCommand = new SlashCommandBuilder()
-  .setName("충전패널").setDescription("자동충전 패널을 현재 채널에 게시합니다.")
-  .setDefaultMemberPermissions(adminPermission);
+  .setName("충전패널").setDescription("자동충전 패널을 현재 채널에 게시합니다.");
 const manualRechargeCommand = new SlashCommandBuilder()
   .setName("수동충전").setDescription("유저 잔액을 수동으로 충전하거나 차감합니다.")
-  .setDefaultMemberPermissions(adminPermission)
   .addUserOption((option) => option.setName("유저").setDescription("잔액을 조정할 유저").setRequired(true))
   .addIntegerOption((option) => option.setName("금액").setDescription("원 단위 금액, 음수는 차감").setMinValue(-Number.MAX_SAFE_INTEGER).setMaxValue(Number.MAX_SAFE_INTEGER).setRequired(true));
 const recoverCommand = new SlashCommandBuilder()
