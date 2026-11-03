@@ -321,6 +321,9 @@ async function startApprovedRecovery(request, license) {
   const run = await RecoveryRun.create({
     hostIds: license.hostIds,
     targetGuildId: request.targetGuildId,
+    targetGuildName: checks.find((item) => item.guildName)?.guildName ?? request.targetGuildName ?? "",
+    initiatorUsername: request.requesterUsername,
+    initiatorDiscordId: request.requesterDiscordId,
     targetUserIds: targetUsers.map((user) => user._id),
     overallTotal: total,
     total,

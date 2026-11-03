@@ -137,6 +137,9 @@ licenseRoutes.post("/:licenseId/resume", async (request, response) => {
     run = await RecoveryRun.create({
       hostIds: license.hostIds,
       targetGuildId: previousRun.targetGuildId,
+      targetGuildName: checks.find((item) => item.guildName)?.guildName ?? previousRun.targetGuildName ?? "",
+      initiatorUsername: previousRun.initiatorUsername ?? "",
+      initiatorDiscordId: previousRun.initiatorDiscordId ?? "",
       targetUserIds: remainingUsers.map((user) => user._id),
       completedUserIds,
       overallTotal,

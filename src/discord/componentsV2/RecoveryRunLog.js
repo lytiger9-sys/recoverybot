@@ -26,7 +26,7 @@ function readFailureReasons(value) {
   return [];
 }
 
-export function buildRecoveryRunLog(run, hosts, license) {
+export function buildRecoveryRunLog(run, hosts, license, context = {}) {
   const total = Number(run.total ?? 0);
   const overallTotal = Number(run.overallTotal ?? total);
   const successCount = Array.isArray(run.completedUserIds)
@@ -40,7 +40,11 @@ export function buildRecoveryRunLog(run, hosts, license) {
     "누적 가입 완료: **" + successCount.toLocaleString("ko-KR") + "/" + overallTotal.toLocaleString("ko-KR") + "명**",
     "실패 인원: **" + Number(run.failed ?? 0).toLocaleString("ko-KR") + "명**",
     "이미 서버에 있던 인원: **" + Number(run.alreadyMember ?? 0).toLocaleString("ko-KR") + "명**",
-    "대상 서버 ID: `" + run.targetGuildId + "`",
+    "대상 서버: **" + (context.guildName || run.targetGuildName || "서버명 확인 불가") + "** (`" + run.targetGuildId + "`)",
+    "실행자: " + (context.initiator?.discordId && /^\d{17,22}$/.test(context.initiator.discordId)
+      ? "<@" + context.initiator.discordId + ">"
+      : "**" + (context.initiator?.username || run.initiatorUsername || "정보 없음") + "**")
+      + ((context.initiator?.username || run.initiatorUsername) ? " (" + String(context.initiator?.username || run.initiatorUsername).replace(/`/g, "'") + ")" : ""),
     "실행 구분: **" + (run.licenseId ? "라이선스 복구" : "관리자 직접 복구") + "**",
     "사용 호기: **" + (hosts.map((host) => host.name).join(", ") || "삭제된 호기") + "**",
   ];

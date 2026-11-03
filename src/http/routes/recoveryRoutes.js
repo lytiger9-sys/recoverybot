@@ -80,6 +80,9 @@ recoveryRoutes.post("/runs", async (request, response) => {
   const run = await RecoveryRun.create({
     hostIds,
     targetGuildId: guildId,
+    targetGuildName: presence.find((item) => item.guildName)?.guildName ?? "",
+    initiatorUsername: request.admin?.username ?? "관리자",
+    initiatorDiscordId: config.recoveryAdminUserId,
     targetUserIds: targetUsers.map((user) => user._id),
     overallTotal: total,
     total,
