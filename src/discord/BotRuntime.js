@@ -27,6 +27,7 @@ import { adjustUserBalance, BalanceAdjustmentError } from "../services/AdminBala
 import { getPurchasesAwaitingReview, getReviewablePurchase, submitPurchaseReview } from "../services/PurchaseReviewService.js";
 import { startMainBotPresence } from "../services/MainBotPresence.js";
 import { probeDiscordGatewayRest } from "./DiscordGatewayProbe.js";
+import { syncGuildCommands } from "./commandSync.js";
 
 let mainClient;
 let refreshTimer;
@@ -407,9 +408,8 @@ async function startMainClient(token) {
     console.log("Main bot online:", client.user?.tag ?? client.user?.username ?? "unknown");
     stopMainBotPresence?.();
     stopMainBotPresence = startMainBotPresence(client);
-    try { await client.application.commands.set([rechargePanelCommand, manualRechargeCommand, recoverCommand].map((command) => command.toJSON())); }
-    catch (error) { console.error("Discord command sync failed:", error?.message ?? error?.name ?? "UnknownError"); }
   });
+  syncGuildCommands(client, [rechargePanelCommand, manualRechargeCommand, recoverCommand], "Main bot");
   configureClient(client);
   console.log("Connecting main bot to Discord...");
   await probeDiscordGatewayRest(token, "Main bot");

@@ -265,6 +265,7 @@ export async function createLicenseUseRequest({ code, commandHostId, requesterDi
   const checks = await checkHostsInGuild(hosts, targetGuildId);
   const blocked = checks.filter((item) => !item.present || !item.canAddMembers);
   if (blocked.length) throw new LicenseError("HOST_NOT_READY", "대상 서버에 모든 호기를 초대하고 멤버 추가 권한을 확인해 주세요: " + blocked.map((item) => item.name).join(", "));
+  const resolvedGuildName = checks.find((item) => item.guildName)?.guildName || targetGuildName || "";
 
   const requestId = new mongoose.Types.ObjectId();
   const expirationFilter = license.expiresAt ? { expiresAt: { $gt: new Date() } } : { expiresAt: null };
@@ -284,7 +285,7 @@ export async function createLicenseUseRequest({ code, commandHostId, requesterDi
       commandHostId: requestHostId,
       hostIds: locked.hostIds,
       targetGuildId,
-      targetGuildName,
+      targetGuildName: resolvedGuildName,
       status: "PENDING",
     });
     return { request, license: locked, hosts, autoApproved: requesterDiscordId === config.recoveryAdminUserId };
