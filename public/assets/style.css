@@ -202,7 +202,7 @@ progress { display: block; width: 130px; height: 10px; accent-color: #315ee8; }
 .recovery-runs-table col:nth-child(11) { width: 5%; }
 .recovery-runs-table th, .recovery-runs-table td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .recovery-runs-table progress { max-width: 100%; }
-.license-detail-dialog { width: min(1200px, calc(100vw - 32px)); max-height: min(86vh, 900px); overflow: auto; padding: 24px; }
+dialog.panel.license-detail-dialog { width: min(1200px, calc(100vw - 32px)); max-width: min(1200px, calc(100vw - 32px)); max-height: min(86vh, 900px); overflow: auto; padding: 24px; }
 .license-detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
 .license-detail-header h2, .license-detail-header p { margin: 0; }
 .license-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
